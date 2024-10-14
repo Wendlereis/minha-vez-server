@@ -1,0 +1,21 @@
+{
+  "name": "minha-vez-server",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "A socket.io server for minha vez application. A queue management for sand sports",
+  "main": "index.js",
+  "scripts": {
+    "start": "tsx watch src/server.ts",
+    "build": "tsc src/server.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.7.5",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "socket.io": "^4.8.0"
+  }
+}
