@@ -1,4 +1,4 @@
-import { Athlete } from "../domains/athlete.js";
+import { Athlete } from "../model/athleteModel.js";
 
 const athletes: Athlete[] = [];
 
@@ -11,7 +11,9 @@ export function add(athlete: Athlete) {
 }
 
 export function remove(id: string) {
-  const athleteLeavingIndex = athletes.findIndex((athlete) => (athlete.id = id));
+  const athleteLeavingIndex = athletes.findIndex(
+    (athlete) => (athlete.id = id)
+  );
 
   athletes.splice(athleteLeavingIndex, 1);
 }

@@ -1,6 +1,6 @@
-import { Athlete } from "../domains/athlete.js";
+import { Athlete } from "../model/athleteModel.js";
 
-import * as athletesRepository from "../repository/athletes.js";
+import * as athletesRepository from "../repository/athleteRepository.js";
 
 export function join(athelete: Athlete) {
   athletesRepository.add(athelete);

@@ -1,9 +1,9 @@
 import { createServer } from "http";
 import { Server } from "socket.io";
 
-import { Athlete } from "./domains/athlete.js";
+import { Athlete } from "./model/athleteModel.js";
 
-import * as queueController from "./controllers/queue.js";
+import * as queueController from "./controller/queueController.js";
 
 interface Payload {
   name: string;
