@@ -11,7 +11,7 @@ export function add(athlete: Athlete) {
 }
 
 export function remove(id: string) {
-  const playerLeavingIndex = athletes.findIndex((athlete) => (athlete.id = id));
+  const athleteLeavingIndex = athletes.findIndex((athlete) => (athlete.id = id));
 
-  athletes.splice(playerLeavingIndex, 1);
+  athletes.splice(athleteLeavingIndex, 1);
 }
