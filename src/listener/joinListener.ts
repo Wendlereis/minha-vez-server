@@ -16,13 +16,13 @@ export function registerQueueListeners(io: Server, socket: Socket) {
 
     const athletes = queueController.join(athlete);
 
-    io.emit("players-waiting", athletes);
+    io.emit("queue:list", athletes);
   }
 
   function leave() {
     const athletes = queueController.leave(socket.id);
 
-    io.emit("players-waiting", athletes);
+    io.emit("queue:list", athletes);
   }
 
   socket.on("queue:join", join);
