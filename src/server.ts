@@ -1,9 +1,7 @@
 import { createServer } from "http";
 import { Server } from "socket.io";
 
-import { Athlete } from "./model/athleteModel.js";
-
-import * as queueController from "./controller/queueController.js";
+import { registerQueueListeners } from "./listener/joinListener.js";
 
 interface Payload {
   name: string;
@@ -20,22 +18,7 @@ const players: string[] = [];
 const playersInGame: string[] = [];
 
 io.on("connection", (socket) => {
-  socket.on("join", (data: Payload) => {
-    const athlete: Athlete = {
-      id: socket.id,
-      name: data.name,
-    };
-
-    const athletes = queueController.join(athlete);
-
-    io.emit("players-waiting", athletes);
-  });
-
-  socket.on("leave", (data: Payload) => {
-    const athletes = queueController.leave(socket.id);
-
-    io.emit("players-waiting", athletes);
-  });
+  registerQueueListeners(io, socket);
 
   socket.on("join-court", (data: Payload) => {
     playersInGame.push(data.name);
