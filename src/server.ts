@@ -1,13 +1,15 @@
 import { createServer } from "http";
 import { Server } from "socket.io";
 
+import { registerQueueListeners } from "./listener/joinListener.js";
+
 interface Payload {
   name: string;
 }
 
 const httpServer = createServer();
 
-const io = new Server(httpServer, {
+export const io = new Server(httpServer, {
   cors: { origin: "*" },
 });
 
@@ -16,16 +18,12 @@ const players: string[] = [];
 const playersInGame: string[] = [];
 
 io.on("connection", (socket) => {
-  socket.on("join", (data: Payload) => {
-    players.push(data.name);
-
-    io.emit("players-waiting", players);
-  });
+  registerQueueListeners(io, socket);
 
   socket.on("join-court", (data: Payload) => {
     playersInGame.push(data.name);
 
-    io.emit("players-in-game", playersInGame);  
+    io.emit("players-in-game", playersInGame);
 
     const playerJoiningIndex = players.indexOf(data.name);
 
