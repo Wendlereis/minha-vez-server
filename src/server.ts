@@ -3,6 +3,7 @@ import { createServer } from "http";
 
 import { registerQueueListeners } from "./listener/joinListener.js";
 import { registerCourtListeners } from "./listener/courtListener.js";
+import { registerConnectionListeners } from "./listener/connectionListener.js";
 
 const httpServer = createServer();
 
@@ -15,9 +16,7 @@ io.on("connection", (socket) => {
 
   registerCourtListeners(io, socket);
 
-  socket.on("disconnect", () => {
-    console.log(`User ${socket.id} disconnected`);
-  });
+  registerConnectionListeners(io, socket);
 });
 
 io.listen(3000);
