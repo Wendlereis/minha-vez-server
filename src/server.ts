@@ -1,7 +1,7 @@
 import { Server } from "socket.io";
 import { createServer } from "http";
 
-import { registerQueueListeners } from "./listener/joinListener.js";
+import { registerQueueListeners } from "./listener/queueListener.js";
 import { registerCourtListeners } from "./listener/courtListener.js";
 import { registerConnectionListeners } from "./listener/connectionListener.js";
 
