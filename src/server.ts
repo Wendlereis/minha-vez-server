@@ -1,9 +1,9 @@
 import { Server } from "socket.io";
 import { createServer } from "http";
 
-import { registerQueueListeners } from "./listener/queueListener.js";
-import { registerCourtListeners } from "./listener/courtListener.js";
-import { registerConnectionListeners } from "./listener/connectionListener.js";
+import { registerQueueHandlers } from "./handlers/queueHandler.js";
+import { registerCourtHandlers } from "./handlers/courtHandler.js";
+import { registerConnectionHandlers } from "./handlers/connectionHandler.js";
 
 const httpServer = createServer();
 
@@ -12,11 +12,9 @@ const io = new Server(httpServer, {
 });
 
 io.on("connection", (socket) => {
-  registerQueueListeners(io, socket);
-
-  registerCourtListeners(io, socket);
-
-  registerConnectionListeners(io, socket);
+  registerQueueHandlers(io, socket);
+  registerCourtHandlers(io, socket);
+  registerConnectionHandlers(io, socket);
 });
 
 io.listen(3000);

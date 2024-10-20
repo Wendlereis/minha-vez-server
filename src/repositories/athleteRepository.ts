@@ -1,16 +1,16 @@
-import { Athlete } from "../model/athleteModel.js";
+import { Athlete } from "../models/athleteModel.js";
 
 const athletes: Athlete[] = [];
 
-export function list() {
+function list() {
   return athletes;
 }
 
-export function add(athlete: Athlete) {
+function add(athlete: Athlete) {
   athletes.push(athlete);
 }
 
-export function remove(id: string) {
+function remove(id: string) {
   const athleteLeavingIndex = athletes.findIndex(
     (athlete) => athlete.id === id
   );
@@ -21,3 +21,9 @@ export function remove(id: string) {
 
   athletes.splice(athleteLeavingIndex, 1);
 }
+
+export const athleteRepository = {
+  list,
+  add,
+  remove,
+};
