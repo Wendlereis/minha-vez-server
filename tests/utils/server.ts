@@ -3,12 +3,12 @@ import { createServer } from "http";
 import { Server, Socket } from "socket.io";
 import { Socket as ClientSocket, io as ioc } from "socket.io-client";
 
-import { registerQueueListeners } from "../../src/listener/queueListener.js";
-import { registerCourtListeners } from "../../src/listener/courtListener.js";
-import { registerConnectionListeners } from "../../src/listener/connectionListener.js";
+import { registerQueueHandlers } from "../../src/handlers/queueHandler.js";
+import { registerCourtHandlers } from "../../src/handlers/courtHandler.js";
+import { registerConnectionHandlers } from "../../src/handlers/connectionHandler.js";
 
 export function waitForEventToBeEmitted(emitter: ClientSocket, event: string) {
-  return new Promise<any>((resolve) => {
+  return new Promise((resolve) => {
     emitter.once(event, resolve);
   });
 }
@@ -29,9 +29,9 @@ export async function setupTestServer(port: number) {
   io.on("connection", (connectedSocket) => {
     serverSocket = connectedSocket;
 
-    registerQueueListeners(io, serverSocket);
-    registerCourtListeners(io, serverSocket);
-    registerConnectionListeners(io, serverSocket);
+    registerQueueHandlers(io, serverSocket);
+    registerCourtHandlers(io, serverSocket);
+    registerConnectionHandlers(io, serverSocket);
   });
 
   await waitForEventToBeEmitted(clientSocket, "connect");

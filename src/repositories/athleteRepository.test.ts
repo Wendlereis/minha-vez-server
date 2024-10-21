@@ -1,34 +1,34 @@
 import { describe, test, expect } from "vitest";
 
-import { add, list, remove } from "./courtRepository.js";
+import { athleteRepository } from "./athleteRepository.js";
 
-describe("Court Repository", () => {
+describe("Athlete Repository", () => {
   test("should add an athlete", () => {
-    add({ id: "999", name: "expensive player" });
+    athleteRepository.add({ id: "999", name: "expensive player" });
 
-    const result = list();
+    const result = athleteRepository.list();
 
     expect(result).toEqual([{ id: "999", name: "expensive player" }]);
   });
 
   test("should list athletes", () => {
-    const result = list();
+    const result = athleteRepository.list();
 
     expect(result).toEqual([{ id: "999", name: "expensive player" }]);
   });
 
   test("should not remove an unknown athlete from the list", () => {
-    remove("000");
+    athleteRepository.remove("000");
 
-    const result = list();
+    const result = athleteRepository.list();
 
     expect(result).toEqual([{ id: "999", name: "expensive player" }]);
   });
 
   test("should remove an athlete from the list", () => {
-    remove("999");
+    athleteRepository.remove("999");
 
-    const result = list();
+    const result = athleteRepository.list();
 
     expect(result).toEqual([]);
   });
