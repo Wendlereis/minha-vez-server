@@ -1,25 +1,26 @@
 import { Server, Socket } from "socket.io";
 
-import { Athlete } from "../model/athleteModel.js";
-import * as courtController from "../controller/courtController.js";
-import * as queueController from "../controller/queueController.js";
+import { Athlete } from "../models/athleteModel.js";
+
+import { courtService } from "../services/courtService.js";
+import { queueService } from "../services/queueService.js";
 
 interface CourtPayload {
   name: string;
 }
 
-export function registerCourtListeners(io: Server, socket: Socket) {
+export function registerCourtHandlers(io: Server, socket: Socket) {
   function join(data: CourtPayload) {
     const player: Athlete = {
       id: socket.id,
       name: data.name,
     };
 
-    const courtPlayers = courtController.join(player);
+    const courtPlayers = courtService.join(player);
 
     io.emit("court:list", courtPlayers);
 
-    const athletes = queueController.leave(player.id);
+    const athletes = queueService.leave(player.id);
 
     io.emit("queue:list", athletes);
   }
@@ -30,11 +31,11 @@ export function registerCourtListeners(io: Server, socket: Socket) {
       name: data.name,
     };
 
-    const courtPlayers = courtController.leave(player.id);
+    const courtPlayers = courtService.leave(player.id);
 
     io.emit("court:list", courtPlayers);
 
-    const athletes = queueController.join(player);
+    const athletes = queueService.join(player);
 
     io.emit("queue:list", athletes);
   }
