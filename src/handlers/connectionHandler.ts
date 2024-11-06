@@ -11,7 +11,7 @@ export function registerConnectionHandlers(io: Server, socket: Socket) {
 
     const athletes = queueService.leave(socket.id);
 
-    io.emit("queue:list", athletes);
+    io.emit("lobby:list", athletes);
   }
 
   socket.on("disconnect", disconnect);

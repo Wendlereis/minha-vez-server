@@ -8,7 +8,7 @@ interface QueuePayload {
   name: string;
 }
 
-export function registerQueueHandlers(io: Server, socket: Socket) {
+export function registerLobbyHandlers(io: Server, socket: Socket) {
   function join(data: QueuePayload) {
     const athlete: Athlete = {
       id: socket.id,
@@ -17,15 +17,15 @@ export function registerQueueHandlers(io: Server, socket: Socket) {
 
     const athletes = queueService.join(athlete);
 
-    io.emit("queue:list", athletes);
+    io.emit("lobby:list", athletes);
   }
 
   function leave() {
     const athletes = queueService.leave(socket.id);
 
-    io.emit("queue:list", athletes);
+    io.emit("lobby:list", athletes);
   }
 
-  socket.on("queue:join", join);
-  socket.on("queue:leave", leave);
+  socket.on("lobby:join", join);
+  socket.on("lobby:leave", leave);
 }
