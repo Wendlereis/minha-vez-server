@@ -1,7 +1,7 @@
 import { Server } from "socket.io";
 import { createServer } from "http";
 
-import { registerQueueHandlers } from "./handlers/queueHandler.js";
+import { registerLobbyHandlers } from "./handlers/lobbyHandler.js";
 import { registerCourtHandlers } from "./handlers/courtHandler.js";
 import { registerConnectionHandlers } from "./handlers/connectionHandler.js";
 
@@ -12,7 +12,7 @@ const io = new Server(httpServer, {
 });
 
 io.on("connection", (socket) => {
-  registerQueueHandlers(io, socket);
+  registerLobbyHandlers(io, socket);
   registerCourtHandlers(io, socket);
   registerConnectionHandlers(io, socket);
 });

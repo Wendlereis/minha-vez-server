@@ -31,9 +31,9 @@ describe("Handlers", () => {
 
   describe("Queue Handler", () => {
     it("should join the queue", async () => {
-      clientSocket.emit("queue:join", { name: "expensive player" });
+      clientSocket.emit("lobby:join", { name: "expensive player" });
 
-      const queue = await waitForEventToBeEmitted(clientSocket, "queue:list");
+      const queue = await waitForEventToBeEmitted(clientSocket, "lobby:list");
 
       expect(queue).toEqual([
         { id: serverSocket?.id, name: "expensive player" },
@@ -41,9 +41,9 @@ describe("Handlers", () => {
     });
 
     it("should leave the queue", async () => {
-      clientSocket.emit("queue:leave", { name: "expensive player" });
+      clientSocket.emit("lobby:leave", { name: "expensive player" });
 
-      const queue = await waitForEventToBeEmitted(clientSocket, "queue:list");
+      const queue = await waitForEventToBeEmitted(clientSocket, "lobby:list");
 
       expect(queue).toEqual([]);
     });

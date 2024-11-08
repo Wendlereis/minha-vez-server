@@ -22,7 +22,7 @@ export function registerCourtHandlers(io: Server, socket: Socket) {
 
     const athletes = queueService.leave(player.id);
 
-    io.emit("queue:list", athletes);
+    io.emit("lobby:list", athletes);
   }
 
   function leave(data: CourtPayload) {
@@ -37,7 +37,7 @@ export function registerCourtHandlers(io: Server, socket: Socket) {
 
     const athletes = queueService.join(player);
 
-    io.emit("queue:list", athletes);
+    io.emit("lobby:list", athletes);
   }
 
   socket.on("court:join", join);

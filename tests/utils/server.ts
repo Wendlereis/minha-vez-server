@@ -3,7 +3,7 @@ import { createServer } from "http";
 import { Server, Socket } from "socket.io";
 import { Socket as ClientSocket, io as ioc } from "socket.io-client";
 
-import { registerQueueHandlers } from "../../src/handlers/queueHandler.js";
+import { registerLobbyHandlers } from "../../src/handlers/lobbyHandler.js";
 import { registerCourtHandlers } from "../../src/handlers/courtHandler.js";
 import { registerConnectionHandlers } from "../../src/handlers/connectionHandler.js";
 
@@ -29,7 +29,7 @@ export async function setupTestServer(port: number) {
   io.on("connection", (connectedSocket) => {
     serverSocket = connectedSocket;
 
-    registerQueueHandlers(io, serverSocket);
+    registerLobbyHandlers(io, serverSocket);
     registerCourtHandlers(io, serverSocket);
     registerConnectionHandlers(io, serverSocket);
   });
