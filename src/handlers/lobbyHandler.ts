@@ -3,6 +3,7 @@ import { Server, Socket } from "socket.io";
 import { Athlete } from "../models/athleteModel.js";
 
 import { queueService } from "../services/queueService.js";
+import { lobbyService } from "../services/lobbyService.js";
 
 interface QueuePayload {
   name: string;
@@ -15,15 +16,19 @@ export function registerLobbyHandlers(io: Server, socket: Socket) {
       name: data.name,
     };
 
-    const athletes = queueService.join(athlete);
+    queueService.join(athlete);
 
-    io.emit("lobby:list", athletes);
+    const lobbyList = lobbyService.getList();
+    
+    io.emit("lobby:list", lobbyList);
   }
-
+  
   function leave() {
-    const athletes = queueService.leave(socket.id);
+    queueService.leave(socket.id);
+    
+    const lobbyList = lobbyService.getList();
 
-    io.emit("lobby:list", athletes);
+    io.emit("lobby:list", lobbyList);
   }
 
   socket.on("lobby:join", join);

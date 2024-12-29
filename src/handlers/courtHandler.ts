@@ -4,6 +4,7 @@ import { Athlete } from "../models/athleteModel.js";
 
 import { courtService } from "../services/courtService.js";
 import { queueService } from "../services/queueService.js";
+import { lobbyService } from "../services/lobbyService.js";
 
 interface CourtPayload {
   name: string;
@@ -16,13 +17,13 @@ export function registerCourtHandlers(io: Server, socket: Socket) {
       name: data.name,
     };
 
-    const courtPlayers = courtService.join(player);
+    courtService.join(player);
 
-    io.emit("court:list", courtPlayers);
+    queueService.leave(player.id);
 
-    const athletes = queueService.leave(player.id);
+    const lobbyList = lobbyService.getList();
 
-    io.emit("lobby:list", athletes);
+    io.emit("lobby:list", lobbyList);
   }
 
   function leave(data: CourtPayload) {
@@ -31,13 +32,13 @@ export function registerCourtHandlers(io: Server, socket: Socket) {
       name: data.name,
     };
 
-    const courtPlayers = courtService.leave(player.id);
+    courtService.leave(player.id);
 
-    io.emit("court:list", courtPlayers);
+    queueService.join(player);
 
-    const athletes = queueService.join(player);
+    const lobbyList = lobbyService.getList();
 
-    io.emit("lobby:list", athletes);
+    io.emit("lobby:list", lobbyList);
   }
 
   socket.on("court:join", join);

@@ -6,6 +6,23 @@ vi.mock("../repositories/athleteRepository.js", () => {
   return {
     athleteRepository: {
       size: vi.fn().mockReturnValue(10),
+      list: vi
+        .fn()
+        .mockReturnValue([
+          { id: "connection-id", name: "expensive player waiting" },
+        ]),
+    },
+  };
+});
+
+vi.mock("../repositories/courtRepository.js", () => {
+  return {
+    courtRepository: {
+      list: vi
+        .fn()
+        .mockReturnValue([
+          { id: "connection-id", name: "expensive player in game" },
+        ]),
     },
   };
 });
@@ -26,6 +43,15 @@ describe("Lobby Service", () => {
     expect(preview).toEqual({
       queueSize: 10,
       nextGameDate: "2023-07-14T00:00:00.000Z",
+    });
+  });
+
+  test("should return a lobby list", () => {
+    const preview = lobbyService.getList();
+
+    expect(preview).toEqual({
+      court: [{ id: "connection-id", name: "expensive player in game" }],
+      atheletes: [{ id: "connection-id", name: "expensive player waiting" }],
     });
   });
 });
