@@ -52,6 +52,7 @@ describe("Lobby Service", () => {
     expect(preview).toEqual({
       court: [{ id: "connection-id", name: "expensive player in game" }],
       atheletes: [{ id: "connection-id", name: "expensive player waiting" }],
+      nextGameDate: "2023-07-14T00:00:00.000Z",
     });
   });
 });

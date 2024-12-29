@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { Server, Socket } from "socket.io";
 import { Socket as ClientSocket } from "socket.io-client";
@@ -7,6 +7,15 @@ import {
   setupTestServer,
   waitForEventToBeEmitted,
 } from "../../tests/utils/server.js";
+
+vi.mock("../libraries/date.js", () => {
+  return {
+    now: vi.fn(),
+    addMinutes: vi.fn().mockReturnValue({
+      toJSDate: vi.fn().mockReturnValue("2023-07-14T00:00:00.000Z"),
+    }),
+  };
+});
 
 describe("Handlers", () => {
   let io: Server;
@@ -38,6 +47,7 @@ describe("Handlers", () => {
       expect(queue).toEqual({
         atheletes: [{ id: serverSocket?.id, name: "expensive player" }],
         court: [],
+        nextGameDate: "2023-07-14T00:00:00.000Z",
       });
     });
 
@@ -49,6 +59,7 @@ describe("Handlers", () => {
       expect(queue).toEqual({
         atheletes: [],
         court: [],
+        nextGameDate: "2023-07-14T00:00:00.000Z",
       });
     });
   });
@@ -62,6 +73,7 @@ describe("Handlers", () => {
       expect(court).toEqual({
         atheletes: [],
         court: [{ id: serverSocket?.id, name: "expensive player" }],
+        nextGameDate: "2023-07-14T00:00:00.000Z",
       });
     });
 
@@ -73,6 +85,7 @@ describe("Handlers", () => {
       expect(queue).toEqual({
         atheletes: [{ id: serverSocket?.id, name: "expensive player" }],
         court: [],
+        nextGameDate: "2023-07-14T00:00:00.000Z",
       });
     });
   });
