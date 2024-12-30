@@ -17,6 +17,12 @@ describe("Athlete Repository", () => {
     expect(result).toEqual([{ id: "999", name: "expensive player" }]);
   });
 
+  test("should return the athletes' list size", () => {
+    const result = athleteRepository.size();
+
+    expect(result).toEqual(1);
+  });
+
   test("should not remove an unknown athlete from the list", () => {
     athleteRepository.remove("000");
 

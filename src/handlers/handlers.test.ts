@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { Server, Socket } from "socket.io";
 import { Socket as ClientSocket } from "socket.io-client";
@@ -7,6 +7,15 @@ import {
   setupTestServer,
   waitForEventToBeEmitted,
 } from "../../tests/utils/server.js";
+
+vi.mock("../libraries/date.js", () => {
+  return {
+    now: vi.fn(),
+    addMinutes: vi.fn().mockReturnValue({
+      toJSDate: vi.fn().mockReturnValue("2023-07-14T00:00:00.000Z"),
+    }),
+  };
+});
 
 describe("Handlers", () => {
   let io: Server;
@@ -29,23 +38,29 @@ describe("Handlers", () => {
     clientSocket.close();
   });
 
-  describe("Queue Handler", () => {
-    it("should join the queue", async () => {
-      clientSocket.emit("queue:join", { name: "expensive player" });
+  describe("Lobby Handler", () => {
+    it("should join the lobby", async () => {
+      clientSocket.emit("lobby:join", { name: "expensive player" });
 
-      const queue = await waitForEventToBeEmitted(clientSocket, "queue:list");
+      const queue = await waitForEventToBeEmitted(clientSocket, "lobby:list");
 
-      expect(queue).toEqual([
-        { id: serverSocket?.id, name: "expensive player" },
-      ]);
+      expect(queue).toEqual({
+        atheletes: [{ id: serverSocket?.id, name: "expensive player" }],
+        court: [],
+        nextGameDate: "2023-07-14T00:00:00.000Z",
+      });
     });
 
-    it("should leave the queue", async () => {
-      clientSocket.emit("queue:leave", { name: "expensive player" });
+    it("should leave the lobby", async () => {
+      clientSocket.emit("lobby:leave", { name: "expensive player" });
 
-      const queue = await waitForEventToBeEmitted(clientSocket, "queue:list");
+      const queue = await waitForEventToBeEmitted(clientSocket, "lobby:list");
 
-      expect(queue).toEqual([]);
+      expect(queue).toEqual({
+        atheletes: [],
+        court: [],
+        nextGameDate: "2023-07-14T00:00:00.000Z",
+      });
     });
   });
 
@@ -53,19 +68,25 @@ describe("Handlers", () => {
     it("should join the court", async () => {
       clientSocket.emit("court:join", { name: "expensive player" });
 
-      const court = await waitForEventToBeEmitted(clientSocket, "court:list");
+      const court = await waitForEventToBeEmitted(clientSocket, "lobby:list");
 
-      expect(court).toEqual([
-        { id: serverSocket?.id, name: "expensive player" },
-      ]);
+      expect(court).toEqual({
+        atheletes: [],
+        court: [{ id: serverSocket?.id, name: "expensive player" }],
+        nextGameDate: "2023-07-14T00:00:00.000Z",
+      });
     });
 
     it("should leave the court", async () => {
       clientSocket.emit("court:leave", { name: "expensive player" });
 
-      const queue = await waitForEventToBeEmitted(clientSocket, "court:list");
+      const queue = await waitForEventToBeEmitted(clientSocket, "lobby:list");
 
-      expect(queue).toEqual([]);
+      expect(queue).toEqual({
+        atheletes: [{ id: serverSocket?.id, name: "expensive player" }],
+        court: [],
+        nextGameDate: "2023-07-14T00:00:00.000Z",
+      });
     });
   });
 });

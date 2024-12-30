@@ -2,6 +2,7 @@ import { Server, Socket } from "socket.io";
 
 import { courtService } from "../services/courtService.js";
 import { queueService } from "../services/queueService.js";
+import { lobbyService } from "../services/lobbyService.js";
 
 export function registerConnectionHandlers(io: Server, socket: Socket) {
   function disconnect() {
@@ -9,9 +10,11 @@ export function registerConnectionHandlers(io: Server, socket: Socket) {
 
     io.emit("court:list", courtPlayers);
 
-    const athletes = queueService.leave(socket.id);
+    queueService.leave(socket.id);
 
-    io.emit("queue:list", athletes);
+    const lobbyList = lobbyService.getList();
+
+    io.emit("lobby:list", lobbyList);
   }
 
   socket.on("disconnect", disconnect);

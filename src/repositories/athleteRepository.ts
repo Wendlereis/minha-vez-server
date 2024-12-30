@@ -2,12 +2,12 @@ import { Athlete } from "../models/athleteModel.js";
 
 const athletes: Athlete[] = [];
 
-function list() {
-  return athletes;
-}
-
 function add(athlete: Athlete) {
   athletes.push(athlete);
+}
+
+function list() {
+  return athletes;
 }
 
 function remove(id: string) {
@@ -22,8 +22,13 @@ function remove(id: string) {
   athletes.splice(athleteLeavingIndex, 1);
 }
 
+function size() {
+  return athletes.length;
+}
+
 export const athleteRepository = {
-  list,
   add,
+  list,
   remove,
+  size,
 };
