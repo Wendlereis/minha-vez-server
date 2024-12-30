@@ -4,8 +4,9 @@ import { Athlete } from "../models/athleteModel.js";
 
 import { queueService } from "../services/queueService.js";
 import { lobbyService } from "../services/lobbyService.js";
+import { nextGameService } from "../services/nextGameService.js";
 
-import { lobby } from "./events.js";
+import { court, lobby } from "./events.js";
 
 interface QueuePayload {
   name: string;
@@ -21,13 +22,19 @@ export function registerLobbyHandlers(io: Server, socket: Socket) {
     queueService.join(athlete);
 
     const lobbyList = lobbyService.getList();
-    
+
     io.emit(lobby.list, lobbyList);
+
+    if (nextGameService.hasGameAvailable()) {
+      const nextGamePlayers = nextGameService.getPlayers();
+
+      io.emit(court.nextGame, nextGamePlayers);
+    }
   }
-  
+
   function leave() {
     queueService.leave(socket.id);
-    
+
     const lobbyList = lobbyService.getList();
 
     io.emit(lobby.list, lobbyList);
