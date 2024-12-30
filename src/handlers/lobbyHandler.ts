@@ -5,6 +5,8 @@ import { Athlete } from "../models/athleteModel.js";
 import { queueService } from "../services/queueService.js";
 import { lobbyService } from "../services/lobbyService.js";
 
+import { lobby } from "./events.js";
+
 interface QueuePayload {
   name: string;
 }
@@ -20,7 +22,7 @@ export function registerLobbyHandlers(io: Server, socket: Socket) {
 
     const lobbyList = lobbyService.getList();
     
-    io.emit("lobby:list", lobbyList);
+    io.emit(lobby.list, lobbyList);
   }
   
   function leave() {
@@ -28,9 +30,9 @@ export function registerLobbyHandlers(io: Server, socket: Socket) {
     
     const lobbyList = lobbyService.getList();
 
-    io.emit("lobby:list", lobbyList);
+    io.emit(lobby.list, lobbyList);
   }
 
-  socket.on("lobby:join", join);
-  socket.on("lobby:leave", leave);
+  socket.on(lobby.join, join);
+  socket.on(lobby.leave, leave);
 }

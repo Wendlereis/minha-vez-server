@@ -6,6 +6,8 @@ import { courtService } from "../services/courtService.js";
 import { queueService } from "../services/queueService.js";
 import { lobbyService } from "../services/lobbyService.js";
 
+import { court, lobby } from "./events.js";
+
 interface CourtPayload {
   name: string;
 }
@@ -23,7 +25,7 @@ export function registerCourtHandlers(io: Server, socket: Socket) {
 
     const lobbyList = lobbyService.getList();
 
-    io.emit("lobby:list", lobbyList);
+    io.emit(lobby.list, lobbyList);
   }
 
   function leave(data: CourtPayload) {
@@ -38,9 +40,9 @@ export function registerCourtHandlers(io: Server, socket: Socket) {
 
     const lobbyList = lobbyService.getList();
 
-    io.emit("lobby:list", lobbyList);
+    io.emit(lobby.list, lobbyList);
   }
 
-  socket.on("court:join", join);
-  socket.on("court:leave", leave);
+  socket.on(court.join, join);
+  socket.on(court.leave, leave);
 }
