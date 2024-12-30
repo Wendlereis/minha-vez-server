@@ -9,6 +9,7 @@ export const court = {
   list: "court:list",
   join: "court:join",
   leave: "court:leave",
+  nextGame: "court:next-game",
 };
 
 export const server = {
