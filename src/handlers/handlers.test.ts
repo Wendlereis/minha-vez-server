@@ -29,23 +29,27 @@ describe("Handlers", () => {
     clientSocket.close();
   });
 
-  describe("Queue Handler", () => {
-    it("should join the queue", async () => {
+  describe("Lobby Handler", () => {
+    it("should join the lobby", async () => {
       clientSocket.emit("lobby:join", { name: "expensive player" });
 
       const queue = await waitForEventToBeEmitted(clientSocket, "lobby:list");
 
-      expect(queue).toEqual([
-        { id: serverSocket?.id, name: "expensive player" },
-      ]);
+      expect(queue).toEqual({
+        atheletes: [{ id: serverSocket?.id, name: "expensive player" }],
+        court: [],
+      });
     });
 
-    it("should leave the queue", async () => {
+    it("should leave the lobby", async () => {
       clientSocket.emit("lobby:leave", { name: "expensive player" });
 
       const queue = await waitForEventToBeEmitted(clientSocket, "lobby:list");
 
-      expect(queue).toEqual([]);
+      expect(queue).toEqual({
+        atheletes: [],
+        court: [],
+      });
     });
   });
 
@@ -53,19 +57,23 @@ describe("Handlers", () => {
     it("should join the court", async () => {
       clientSocket.emit("court:join", { name: "expensive player" });
 
-      const court = await waitForEventToBeEmitted(clientSocket, "court:list");
+      const court = await waitForEventToBeEmitted(clientSocket, "lobby:list");
 
-      expect(court).toEqual([
-        { id: serverSocket?.id, name: "expensive player" },
-      ]);
+      expect(court).toEqual({
+        atheletes: [],
+        court: [{ id: serverSocket?.id, name: "expensive player" }],
+      });
     });
 
     it("should leave the court", async () => {
       clientSocket.emit("court:leave", { name: "expensive player" });
 
-      const queue = await waitForEventToBeEmitted(clientSocket, "court:list");
+      const queue = await waitForEventToBeEmitted(clientSocket, "lobby:list");
 
-      expect(queue).toEqual([]);
+      expect(queue).toEqual({
+        atheletes: [{ id: serverSocket?.id, name: "expensive player" }],
+        court: [],
+      });
     });
   });
 });
