@@ -26,7 +26,7 @@ export function registerLobbyHandlers(io: Server, socket: Socket) {
     io.emit(lobby.list, lobbyList);
 
     if (nextGameService.hasGameAvailable()) {
-      const nextGamePlayers = nextGameService.getPlayers();
+      const nextGamePlayers = queueService.getFirstFour();
 
       io.emit(court.nextGame, nextGamePlayers);
     }

@@ -13,17 +13,6 @@ function hasGameAvailable() {
   return hasCourtAvailable && hasEnoughPlayers;
 }
 
-function getPlayers() {
-  const queue = athleteRepository.list();
-
-  const [first, second, third, fourth] = queue;
-
-  const players = [first, second, third, fourth];
-
-  return players;
-}
-
 export const nextGameService = {
   hasGameAvailable,
-  getPlayers,
 };

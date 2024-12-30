@@ -10,8 +10,9 @@ import {
 
 const lobbyServiceGetListMock = vi.fn();
 
-const nextGameServiceGetPlayersMock = vi.fn();
 const nextGameServiceHasGameAvailableMock = vi.fn();
+
+const queueServiceGetFirstFourMock = vi.fn();
 
 vi.mock("../libraries/date.js", () => {
   return {
@@ -27,6 +28,7 @@ vi.mock("../services/queueService.js", () => {
     queueService: {
       join: vi.fn(),
       leave: vi.fn(),
+      getFirstFour: () => queueServiceGetFirstFourMock(),
     },
   };
 });
@@ -42,7 +44,6 @@ vi.mock("../services/lobbyService.js", () => {
 vi.mock("../services/nextGameService.js", () => {
   return {
     nextGameService: {
-      getPlayers: () => nextGameServiceGetPlayersMock(),
       hasGameAvailable: () => nextGameServiceHasGameAvailableMock(),
     },
   };
@@ -118,7 +119,7 @@ describe("Handlers", () => {
         nextGameDate: "2023-07-14T00:00:00.000Z",
       });
 
-      nextGameServiceGetPlayersMock.mockReturnValue([
+      queueServiceGetFirstFourMock.mockReturnValue([
         { name: "first" },
         { name: "second" },
         { name: "third" },

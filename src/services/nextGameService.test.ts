@@ -53,24 +53,4 @@ describe("Next Game Service", () => {
 
     expect(response).toBeFalsy();
   });
-
-  test("should return the first fourth player in queue for the next game", () => {
-    atheleteListMock.mockReturnValue([
-      { name: "first" },
-      { name: "second" },
-      { name: "third" },
-      { name: "fourth" },
-      { name: "fifth" },
-      { name: "sixth" },
-    ]);
-
-    const response = nextGameService.getPlayers();
-
-    expect(response).toEqual([
-      { name: "first" },
-      { name: "second" },
-      { name: "third" },
-      { name: "fourth" },
-    ]);
-  });
 });
