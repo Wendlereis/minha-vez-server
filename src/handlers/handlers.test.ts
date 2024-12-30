@@ -113,7 +113,7 @@ describe("Handlers", () => {
           { name: "second" },
           { name: "third" },
           { name: "fourth" },
-          { name: "fifth" },
+          { name: "expensive player" },
         ],
         court: [],
         nextGameDate: "2023-07-14T00:00:00.000Z",
