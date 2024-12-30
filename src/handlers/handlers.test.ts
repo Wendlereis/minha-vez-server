@@ -103,7 +103,7 @@ describe("Handlers", () => {
       });
     });
 
-    it.only("should emit the next-game event when join the lobby", async () => {
+    it("should emit the next-game event when join the lobby", async () => {
       nextGameServiceHasGameAvailableMock.mockReturnValue(true);
 
       lobbyServiceGetListMock.mockReturnValue({
