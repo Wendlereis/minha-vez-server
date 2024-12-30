@@ -102,6 +102,43 @@ describe("Handlers", () => {
         nextGameDate: "2023-07-14T00:00:00.000Z",
       });
     });
+
+    it.only("should emit the next-game event when join the lobby", async () => {
+      nextGameServiceHasGameAvailableMock.mockReturnValue(true);
+
+      lobbyServiceGetListMock.mockReturnValue({
+        atheletes: [
+          { name: "first" },
+          { name: "second" },
+          { name: "third" },
+          { name: "fourth" },
+          { name: "fifth" },
+        ],
+        court: [],
+        nextGameDate: "2023-07-14T00:00:00.000Z",
+      });
+
+      nextGameServiceGetPlayersMock.mockReturnValue([
+        { name: "first" },
+        { name: "second" },
+        { name: "third" },
+        { name: "fourth" },
+      ]);
+
+      clientSocket.emit("lobby:join", { name: "expensive player" });
+
+      const nextGame = await waitForEventToBeEmitted(
+        clientSocket,
+        "court:next-game"
+      );
+
+      expect(nextGame).toEqual([
+        { name: "first" },
+        { name: "second" },
+        { name: "third" },
+        { name: "fourth" },
+      ]);
+    });
   });
 
   describe("Court Handler", () => {
