@@ -8,14 +8,18 @@ import { courtRepository } from "../repositories/courtRepository.js";
 const ATHLETES_PER_GAME = 4;
 const AVG_GAME_TIME_MINUTES = 20;
 
-function getPreview() {
-  const queueSize = athleteRepository.size();
-
+function calculateNextGameDate(queueSize: number) {
   const gamesCount = Math.floor(queueSize / ATHLETES_PER_GAME);
 
   const minutesUntilNextGame = gamesCount * AVG_GAME_TIME_MINUTES;
 
-  const nextGameDate = addMinutes(now(), minutesUntilNextGame).toJSDate();
+  return addMinutes(now(), minutesUntilNextGame).toJSDate();
+}
+
+function getPreview() {
+  const queueSize = athleteRepository.size();
+
+  const nextGameDate = calculateNextGameDate(queueSize);
 
   const lobbyPreview: LobbyPreview = { queueSize, nextGameDate };
 
@@ -27,7 +31,11 @@ function getList() {
 
   const atheletes = athleteRepository.list();
 
-  return { court, atheletes };
+  const queueSize = athleteRepository.size();
+
+  const nextGameDate = calculateNextGameDate(queueSize);
+
+  return { atheletes, court, nextGameDate };
 }
 
 export const lobbyService = {
