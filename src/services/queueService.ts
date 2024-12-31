@@ -3,8 +3,6 @@ import { Athlete } from "../models/athleteModel.js";
 import { athleteRepository } from "../repositories/athleteRepository.js";
 
 function join(athelete: Athlete) {
-  console.log({ athelete });
-
   athleteRepository.add(athelete);
 
   return athleteRepository.list();
