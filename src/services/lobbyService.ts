@@ -26,7 +26,7 @@ function getPreview() {
   return lobbyPreview;
 }
 
-function getList() {
+function getInfo() {
   const court = courtRepository.list();
 
   const atheletes = athleteRepository.list();
@@ -40,5 +40,5 @@ function getList() {
 
 export const lobbyService = {
   getPreview,
-  getList,
+  getInfo,
 };

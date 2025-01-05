@@ -46,8 +46,8 @@ describe("Lobby Service", () => {
     });
   });
 
-  test("should return a lobby list", () => {
-    const preview = lobbyService.getList();
+  test("should return a lobby details", () => {
+    const preview = lobbyService.getInfo();
 
     expect(preview).toEqual({
       court: [{ id: "connection-id", name: "expensive player in game" }],

@@ -21,7 +21,7 @@ export function registerLobbyHandlers(io: Server, socket: Socket) {
 
     queueService.join(athlete);
 
-    const lobbyList = lobbyService.getList();
+    const lobbyList = lobbyService.getInfo();
 
     io.emit(lobby.list, lobbyList);
 
@@ -35,7 +35,7 @@ export function registerLobbyHandlers(io: Server, socket: Socket) {
   function leave() {
     queueService.leave(socket.id);
 
-    const lobbyList = lobbyService.getList();
+    const lobbyList = lobbyService.getInfo();
 
     io.emit(lobby.list, lobbyList);
   }
