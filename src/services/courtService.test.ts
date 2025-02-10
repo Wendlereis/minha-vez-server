@@ -1,17 +1,34 @@
-import { describe, test, expect } from "vitest";
+import { describe, test, expect, vi } from "vitest";
+
+import { Athlete } from "../models/athleteModel.js";
 
 import { courtService } from "./courtService.js";
 
+const courtRepositoryAddMock = vi.fn();
+const courtRepositoryRemoveMock = vi.fn();
+
+vi.mock("../repositories/courtRepository.js", () => {
+  return {
+    courtRepository: {
+      add: (athelete: Athlete) => courtRepositoryAddMock(athelete),
+      remove: (id: string) => courtRepositoryRemoveMock(id),
+    },
+  };
+});
+
 describe("Court Service", () => {
   test("should add an athlete in court list", () => {
-    const result = courtService.join({ id: "999", name: "expensive player" });
+    courtService.join({ id: "athlete-id", name: "expensive player" });
 
-    expect(result).toEqual([{ id: "999", name: "expensive player" }]);
+    expect(courtRepositoryAddMock).toHaveBeenCalledWith({
+      id: "athlete-id",
+      name: "expensive player",
+    });
   });
 
   test("should remove an athlete from the court list", () => {
-    const result = courtService.leave("999");
+    courtService.leave("athlete-id");
 
-    expect(result).toEqual([]);
+    expect(courtRepositoryRemoveMock).toHaveBeenCalledWith("athlete-id");
   });
 });
