@@ -14,7 +14,7 @@ export function registerConnectionHandlers(io: Server, socket: Socket) {
 
     queueService.leave(socket.id);
 
-    const lobbyList = lobbyService.getList();
+    const lobbyList = lobbyService.getInfo();
 
     io.emit(lobby.list, lobbyList);
   }

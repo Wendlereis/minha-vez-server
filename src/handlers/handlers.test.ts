@@ -8,7 +8,7 @@ import {
   waitForEventToBeEmitted,
 } from "../../tests/utils/server.js";
 
-const lobbyServiceGetListMock = vi.fn();
+const lobbyServiceGetInfoMock = vi.fn();
 
 const nextGameServiceHasGameAvailableMock = vi.fn();
 
@@ -36,7 +36,7 @@ vi.mock("../services/queueService.js", () => {
 vi.mock("../services/lobbyService.js", () => {
   return {
     lobbyService: {
-      getList: () => lobbyServiceGetListMock(),
+      getInfo: () => lobbyServiceGetInfoMock(),
     },
   };
 });
@@ -69,7 +69,7 @@ describe("Handlers", () => {
 
   describe("Lobby Handler", () => {
     it("should join the lobby", async () => {
-      lobbyServiceGetListMock.mockReturnValue({
+      lobbyServiceGetInfoMock.mockReturnValue({
         atheletes: [{ id: "athelete-id", name: "expensive player" }],
         court: [],
         nextGameDate: "2023-07-14T00:00:00.000Z",
@@ -87,7 +87,7 @@ describe("Handlers", () => {
     });
 
     it("should leave the lobby", async () => {
-      lobbyServiceGetListMock.mockReturnValue({
+      lobbyServiceGetInfoMock.mockReturnValue({
         atheletes: [],
         court: [],
         nextGameDate: "2023-07-14T00:00:00.000Z",
@@ -107,7 +107,7 @@ describe("Handlers", () => {
     it("should emit the next-game event when join the lobby", async () => {
       nextGameServiceHasGameAvailableMock.mockReturnValue(true);
 
-      lobbyServiceGetListMock.mockReturnValue({
+      lobbyServiceGetInfoMock.mockReturnValue({
         atheletes: [
           { name: "first" },
           { name: "second" },
@@ -144,7 +144,7 @@ describe("Handlers", () => {
 
   describe("Court Handler", () => {
     it("should join the court", async () => {
-      lobbyServiceGetListMock.mockReturnValue({
+      lobbyServiceGetInfoMock.mockReturnValue({
         atheletes: [],
         court: [{ id: "athelete-id", name: "expensive player" }],
         nextGameDate: "2023-07-14T00:00:00.000Z",
@@ -162,7 +162,7 @@ describe("Handlers", () => {
     });
 
     it("should leave the court", async () => {
-      lobbyServiceGetListMock.mockReturnValue({
+      lobbyServiceGetInfoMock.mockReturnValue({
         atheletes: [{ id: "athelete-id", name: "expensive player" }],
         court: [],
         nextGameDate: "2023-07-14T00:00:00.000Z",

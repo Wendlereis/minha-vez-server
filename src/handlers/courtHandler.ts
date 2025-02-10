@@ -23,7 +23,7 @@ export function registerCourtHandlers(io: Server, socket: Socket) {
 
     queueService.leave(player.id);
 
-    const lobbyList = lobbyService.getList();
+    const lobbyList = lobbyService.getInfo();
 
     io.emit(lobby.list, lobbyList);
   }
@@ -38,7 +38,7 @@ export function registerCourtHandlers(io: Server, socket: Socket) {
 
     queueService.join(player);
 
-    const lobbyList = lobbyService.getList();
+    const lobbyList = lobbyService.getInfo();
 
     io.emit(lobby.list, lobbyList);
   }
