@@ -19,13 +19,11 @@ export function registerCourtHandlers(io: Server, socket: Socket) {
       name: data.name,
     };
 
-    courtService.join(player);
-
     queueService.leave(player.id);
 
-    const lobbyList = lobbyService.getInfo();
+    const lobbyInfo = lobbyService.getInfo();
 
-    io.emit(lobby.list, lobbyList);
+    io.emit(lobby.list, lobbyInfo);
   }
 
   function leave(data: CourtPayload) {
@@ -38,9 +36,9 @@ export function registerCourtHandlers(io: Server, socket: Socket) {
 
     queueService.join(player);
 
-    const lobbyList = lobbyService.getInfo();
+    const lobbyInfo = lobbyService.getInfo();
 
-    io.emit(lobby.list, lobbyList);
+    io.emit(lobby.list, lobbyInfo);
   }
 
   socket.on(court.join, join);

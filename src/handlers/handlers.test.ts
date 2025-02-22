@@ -1,7 +1,9 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 import { Socket as ClientSocket } from "socket.io-client";
+
+import { Athlete } from "../models/athleteModel.js";
 
 import {
   setupTestServer,
@@ -13,6 +15,9 @@ const lobbyServiceGetInfoMock = vi.fn();
 const nextGameServiceHasGameAvailableMock = vi.fn();
 
 const queueServiceGetFirstFourMock = vi.fn();
+
+const courtServiceJoinMock = vi.fn();
+const courtServiceLeaveMock = vi.fn();
 
 vi.mock("../libraries/date.js", () => {
   return {
@@ -49,10 +54,21 @@ vi.mock("../services/nextGameService.js", () => {
   };
 });
 
+vi.mock("../services/courtService.js", () => {
+  return {
+    courtService: {
+      join: (player: Athlete) => courtServiceJoinMock(player),
+      leave: (id: string) => courtServiceLeaveMock(id),
+    },
+  };
+});
+
 describe("Handlers", () => {
   let io: Server;
 
   let clientSocket: ClientSocket;
+
+  let serverSocket: Socket | undefined;
 
   beforeAll(async () => {
     const response = await setupTestServer(4444);
@@ -60,6 +76,8 @@ describe("Handlers", () => {
     io = response.io;
 
     clientSocket = response.clientSocket;
+
+    serverSocket = response.serverSocket;
   });
 
   afterAll(() => {
@@ -154,6 +172,11 @@ describe("Handlers", () => {
 
       const court = await waitForEventToBeEmitted(clientSocket, "lobby:list");
 
+      expect(courtServiceJoinMock).toHaveBeenCalledWith({
+        id: serverSocket?.id,
+        name: "expensive player",
+      });
+
       expect(court).toEqual({
         atheletes: [],
         court: [{ id: "athelete-id", name: "expensive player" }],
@@ -171,6 +194,8 @@ describe("Handlers", () => {
       clientSocket.emit("court:leave", { name: "expensive player" });
 
       const queue = await waitForEventToBeEmitted(clientSocket, "lobby:list");
+
+      expect(courtServiceLeaveMock).toHaveBeenCalledWith(serverSocket?.id);
 
       expect(queue).toEqual({
         atheletes: [{ id: "athelete-id", name: "expensive player" }],
