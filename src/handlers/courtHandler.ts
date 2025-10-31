@@ -19,6 +19,8 @@ export function registerCourtHandlers(io: Server, socket: Socket) {
       name: data.name,
     };
 
+    courtService.join(player);
+
     queueService.leave(player.id);
 
     const lobbyInfo = lobbyService.getInfo();

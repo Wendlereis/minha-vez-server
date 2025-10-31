@@ -10,7 +10,7 @@ const courtRepositoryRemoveMock = vi.fn();
 vi.mock("../repositories/courtRepository.js", () => {
   return {
     courtRepository: {
-      add: (athelete: Athlete) => courtRepositoryAddMock(athelete),
+      add: (athlete: Athlete) => courtRepositoryAddMock(athlete),
       remove: (id: string) => courtRepositoryRemoveMock(id),
     },
   };

@@ -3,16 +3,16 @@ import { describe, test, expect, vi } from "vitest";
 import { queueService } from "./queueService.js";
 import { Athlete } from "../models/athleteModel.js";
 
-const atheleteRepositoryListMock = vi.fn();
-const atheleteRepositoryAddMock = vi.fn();
-const atheleteRepositoryRemoveMock = vi.fn();
+const athleteRepositoryListMock = vi.fn();
+const athleteRepositoryAddMock = vi.fn();
+const athleteRepositoryRemoveMock = vi.fn();
 
 vi.mock("../repositories/athleteRepository.js", () => {
   return {
     athleteRepository: {
-      list: () => atheleteRepositoryListMock(),
-      add: (athelete: Athlete) => atheleteRepositoryAddMock(athelete),
-      remove: (id: string) => atheleteRepositoryRemoveMock(id),
+      list: () => athleteRepositoryListMock(),
+      add: (athlete: Athlete) => athleteRepositoryAddMock(athlete),
+      remove: (id: string) => athleteRepositoryRemoveMock(id),
     },
   };
 });
@@ -21,7 +21,7 @@ describe("Queue Service", () => {
   test("should add an athlete in queue list", () => {
     queueService.join({ id: "999", name: "expensive player" });
 
-    expect(atheleteRepositoryAddMock).toHaveBeenCalledWith({
+    expect(athleteRepositoryAddMock).toHaveBeenCalledWith({
       id: "999",
       name: "expensive player",
     });
@@ -30,11 +30,11 @@ describe("Queue Service", () => {
   test("should remove an athlete from the queue list", () => {
     queueService.leave("999");
 
-    expect(atheleteRepositoryRemoveMock).toHaveBeenCalledWith("999");
+    expect(athleteRepositoryRemoveMock).toHaveBeenCalledWith("999");
   });
 
   test("should return the first fourth player from the queue ", () => {
-    atheleteRepositoryListMock.mockReturnValue([
+    athleteRepositoryListMock.mockReturnValue([
       { name: "first" },
       { name: "second" },
       { name: "third" },
