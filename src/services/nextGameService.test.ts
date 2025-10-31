@@ -2,14 +2,14 @@ import { describe, expect, test, vi } from "vitest";
 
 import { nextGameService } from "./nextGameService";
 
-const atheleteListMock = vi.fn();
+const athleteListMock = vi.fn();
 
 const courtListMock = vi.fn();
 
 vi.mock("../repositories/athleteRepository.js", () => {
   return {
     athleteRepository: {
-      list: () => atheleteListMock(),
+      list: () => athleteListMock(),
     },
   };
 });
@@ -26,7 +26,7 @@ describe("Next Game Service", () => {
   test("should return true for next game available", () => {
     courtListMock.mockReturnValue([]);
 
-    atheleteListMock.mockReturnValue([
+    athleteListMock.mockReturnValue([
       { name: "first" },
       { name: "second" },
       { name: "third" },
@@ -47,7 +47,7 @@ describe("Next Game Service", () => {
       { name: "fourth" },
     ]);
 
-    atheleteListMock.mockReturnValue([{ name: "fifth" }, { name: "sixth" }]);
+    athleteListMock.mockReturnValue([{ name: "fifth" }, { name: "sixth" }]);
 
     const response = nextGameService.hasGameAvailable();
 

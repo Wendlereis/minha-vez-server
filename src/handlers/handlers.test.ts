@@ -88,7 +88,7 @@ describe("Handlers", () => {
   describe("Lobby Handler", () => {
     it("should join the lobby", async () => {
       lobbyServiceGetInfoMock.mockReturnValue({
-        atheletes: [{ id: "athelete-id", name: "expensive player" }],
+        athletes: [{ id: "athlete-id", name: "expensive player" }],
         court: [],
         nextGameDate: "2023-07-14T00:00:00.000Z",
       });
@@ -98,7 +98,7 @@ describe("Handlers", () => {
       const queue = await waitForEventToBeEmitted(clientSocket, "lobby:list");
 
       expect(queue).toEqual({
-        atheletes: [{ id: "athelete-id", name: "expensive player" }],
+        athletes: [{ id: "athlete-id", name: "expensive player" }],
         court: [],
         nextGameDate: "2023-07-14T00:00:00.000Z",
       });
@@ -106,7 +106,7 @@ describe("Handlers", () => {
 
     it("should leave the lobby", async () => {
       lobbyServiceGetInfoMock.mockReturnValue({
-        atheletes: [],
+        athletes: [],
         court: [],
         nextGameDate: "2023-07-14T00:00:00.000Z",
       });
@@ -116,7 +116,7 @@ describe("Handlers", () => {
       const queue = await waitForEventToBeEmitted(clientSocket, "lobby:list");
 
       expect(queue).toEqual({
-        atheletes: [],
+        athletes: [],
         court: [],
         nextGameDate: "2023-07-14T00:00:00.000Z",
       });
@@ -126,7 +126,7 @@ describe("Handlers", () => {
       nextGameServiceHasGameAvailableMock.mockReturnValue(true);
 
       lobbyServiceGetInfoMock.mockReturnValue({
-        atheletes: [
+        athletes: [
           { name: "first" },
           { name: "second" },
           { name: "third" },
@@ -163,8 +163,8 @@ describe("Handlers", () => {
   describe("Court Handler", () => {
     it("should join the court", async () => {
       lobbyServiceGetInfoMock.mockReturnValue({
-        atheletes: [],
-        court: [{ id: "athelete-id", name: "expensive player" }],
+        athletes: [],
+        court: [{ id: "athlete-id", name: "expensive player" }],
         nextGameDate: "2023-07-14T00:00:00.000Z",
       });
 
@@ -178,15 +178,15 @@ describe("Handlers", () => {
       });
 
       expect(court).toEqual({
-        atheletes: [],
-        court: [{ id: "athelete-id", name: "expensive player" }],
+        athletes: [],
+        court: [{ id: "athlete-id", name: "expensive player" }],
         nextGameDate: "2023-07-14T00:00:00.000Z",
       });
     });
 
     it("should leave the court", async () => {
       lobbyServiceGetInfoMock.mockReturnValue({
-        atheletes: [{ id: "athelete-id", name: "expensive player" }],
+        athletes: [{ id: "athlete-id", name: "expensive player" }],
         court: [],
         nextGameDate: "2023-07-14T00:00:00.000Z",
       });
@@ -198,7 +198,7 @@ describe("Handlers", () => {
       expect(courtServiceLeaveMock).toHaveBeenCalledWith(serverSocket?.id);
 
       expect(queue).toEqual({
-        atheletes: [{ id: "athelete-id", name: "expensive player" }],
+        athletes: [{ id: "athlete-id", name: "expensive player" }],
         court: [],
         nextGameDate: "2023-07-14T00:00:00.000Z",
       });

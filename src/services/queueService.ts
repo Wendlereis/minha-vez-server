@@ -2,8 +2,8 @@ import { Athlete } from "../models/athleteModel.js";
 
 import { athleteRepository } from "../repositories/athleteRepository.js";
 
-function join(athelete: Athlete) {
-  athleteRepository.add(athelete);
+function join(athlete: Athlete) {
+  athleteRepository.add(athlete);
 }
 
 function leave(id: string) {
