@@ -11,8 +11,7 @@ import {
 } from "../../tests/utils/server.js";
 
 import { lobbyService } from "../services/lobbyService.js";
-
-const nextGameServiceHasGameAvailableMock = vi.fn();
+import { nextGameService } from "../services/nextGameService.js";
 
 const queueServiceGetFirstFourMock = vi.fn();
 
@@ -40,13 +39,7 @@ vi.mock("../services/queueService.js", () => {
 
 vi.mock("../services/lobbyService.js");
 
-vi.mock("../services/nextGameService.js", () => {
-  return {
-    nextGameService: {
-      hasGameAvailable: () => nextGameServiceHasGameAvailableMock(),
-    },
-  };
-});
+vi.mock("../services/nextGameService.js");
 
 vi.mock("../services/courtService.js", () => {
   return {
@@ -57,7 +50,9 @@ vi.mock("../services/courtService.js", () => {
   };
 });
 
-const lobbyServiceGetInfoMock = vi.mocked(lobbyService.getInfo)
+const lobbyServiceGetInfoMock = vi.mocked(lobbyService.getInfo);
+
+const nextGameServiceHasGameAvailableMock = vi.mocked(nextGameService.hasGameAvailable);
 
 describe("Handlers", () => {
   let io: Server;
