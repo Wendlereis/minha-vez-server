@@ -1,12 +1,4 @@
-import {
-  afterAll,
-  beforeAll,
-  describe,
-  expect,
-  it,
-  vi,
-  MockedFunction,
-} from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { Server, Socket } from "socket.io";
 import { Socket as ClientSocket } from "socket.io-client";
@@ -27,10 +19,6 @@ const queueServiceGetFirstFourMock = vi.fn();
 const courtServiceJoinMock = vi.fn();
 const courtServiceLeaveMock = vi.fn();
 
-const getInfoMocked = lobbyService.getInfo as MockedFunction<
-  typeof lobbyService.getInfo
->;
-
 vi.mock("../libraries/date.js", () => {
   return {
     now: vi.fn(),
@@ -50,13 +38,7 @@ vi.mock("../services/queueService.js", () => {
   };
 });
 
-vi.mock("../services/lobbyService.js", () => {
-  return {
-    lobbyService: {
-      getInfo: vi.fn(),
-    },
-  };
-});
+vi.mock("../services/lobbyService.js");
 
 vi.mock("../services/nextGameService.js", () => {
   return {
@@ -74,6 +56,8 @@ vi.mock("../services/courtService.js", () => {
     },
   };
 });
+
+const lobbyServiceGetInfoMock = vi.mocked(lobbyService.getInfo)
 
 describe("Handlers", () => {
   let io: Server;
@@ -99,7 +83,7 @@ describe("Handlers", () => {
 
   describe("Lobby Handler", () => {
     it("should join the lobby", async () => {
-      getInfoMocked.mockReturnValue({
+      lobbyServiceGetInfoMock.mockReturnValue({
         athletes: [
           { id: "athlete-id", name: "expensive player", gender: "male" },
         ],
@@ -121,7 +105,7 @@ describe("Handlers", () => {
     });
 
     it("should leave the lobby", async () => {
-      getInfoMocked.mockReturnValue({
+      lobbyServiceGetInfoMock.mockReturnValue({
         athletes: [],
         court: [],
         nextGameDate: new Date("2023-07-14T00:00:00.000Z"),
@@ -141,7 +125,7 @@ describe("Handlers", () => {
     it("should emit the next-game event when join the lobby", async () => {
       nextGameServiceHasGameAvailableMock.mockReturnValue(true);
 
-      getInfoMocked.mockReturnValue({
+      lobbyServiceGetInfoMock.mockReturnValue({
         athletes: [
           { id: "1", name: "first", gender: "female" },
           { id: "2", name: "second", gender: "female" },
@@ -178,7 +162,7 @@ describe("Handlers", () => {
 
   describe("Court Handler", () => {
     it("should join the court", async () => {
-      getInfoMocked.mockReturnValue({
+      lobbyServiceGetInfoMock.mockReturnValue({
         athletes: [],
         court: [{ id: "athlete-id", name: "expensive player", gender: "male" }],
         nextGameDate: new Date("2023-07-14T00:00:00.000Z"),
@@ -201,7 +185,7 @@ describe("Handlers", () => {
     });
 
     it("should leave the court", async () => {
-      getInfoMocked.mockReturnValue({
+      lobbyServiceGetInfoMock.mockReturnValue({
         athletes: [
           { id: "athlete-id", name: "expensive player", gender: "female" },
         ],
