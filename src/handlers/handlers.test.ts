@@ -3,56 +3,34 @@ import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { Server, Socket } from "socket.io";
 import { Socket as ClientSocket } from "socket.io-client";
 
-import { Athlete } from "../models/athleteModel.js";
+import { lobbyService } from "../services/lobbyService.js";
+import { queueService } from "../services/queueService.js";
+import { courtService } from "../services/courtService.js";
+import { nextGameService } from "../services/nextGameService.js";
 
 import {
   setupTestServer,
   waitForEventToBeEmitted,
 } from "../../tests/utils/server.js";
 
-import { lobbyService } from "../services/lobbyService.js";
-import { nextGameService } from "../services/nextGameService.js";
-
-const queueServiceGetFirstFourMock = vi.fn();
-
-const courtServiceJoinMock = vi.fn();
-const courtServiceLeaveMock = vi.fn();
-
-vi.mock("../libraries/date.js", () => {
-  return {
-    now: vi.fn(),
-    addMinutes: vi.fn().mockReturnValue({
-      toJSDate: vi.fn().mockReturnValue("2023-07-14T00:00:00.000Z"),
-    }),
-  };
-});
-
-vi.mock("../services/queueService.js", () => {
-  return {
-    queueService: {
-      join: vi.fn(),
-      leave: vi.fn(),
-      getFirstFour: () => queueServiceGetFirstFourMock(),
-    },
-  };
-});
-
 vi.mock("../services/lobbyService.js");
+
+vi.mock("../services/queueService.js");
+
+vi.mock("../services/courtService.js");
 
 vi.mock("../services/nextGameService.js");
 
-vi.mock("../services/courtService.js", () => {
-  return {
-    courtService: {
-      join: (player: Athlete) => courtServiceJoinMock(player),
-      leave: (id: string) => courtServiceLeaveMock(id),
-    },
-  };
-});
-
 const lobbyServiceGetInfoMock = vi.mocked(lobbyService.getInfo);
 
-const nextGameServiceHasGameAvailableMock = vi.mocked(nextGameService.hasGameAvailable);
+const queueServiceGetFirstFourMock = vi.mocked(queueService.getFirstFour);
+
+const courtServiceJoinMock = vi.mocked(courtService.join);
+const courtServiceLeaveMock = vi.mocked(courtService.leave);
+
+const nextGameServiceHasGameAvailableMock = vi.mocked(
+  nextGameService.hasGameAvailable
+);
 
 describe("Handlers", () => {
   let io: Server;
