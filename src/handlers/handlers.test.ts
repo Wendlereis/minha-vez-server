@@ -1,4 +1,12 @@
-import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import {
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  it,
+  vi,
+  MockedFunction,
+} from "vitest";
 
 import { Server, Socket } from "socket.io";
 import { Socket as ClientSocket } from "socket.io-client";
@@ -10,7 +18,7 @@ import {
   waitForEventToBeEmitted,
 } from "../../tests/utils/server.js";
 
-const lobbyServiceGetInfoMock = vi.fn();
+import { lobbyService } from "../services/lobbyService.js";
 
 const nextGameServiceHasGameAvailableMock = vi.fn();
 
@@ -18,6 +26,10 @@ const queueServiceGetFirstFourMock = vi.fn();
 
 const courtServiceJoinMock = vi.fn();
 const courtServiceLeaveMock = vi.fn();
+
+const getInfoMocked = lobbyService.getInfo as MockedFunction<
+  typeof lobbyService.getInfo
+>;
 
 vi.mock("../libraries/date.js", () => {
   return {
@@ -41,7 +53,7 @@ vi.mock("../services/queueService.js", () => {
 vi.mock("../services/lobbyService.js", () => {
   return {
     lobbyService: {
-      getInfo: () => lobbyServiceGetInfoMock(),
+      getInfo: vi.fn(),
     },
   };
 });
@@ -87,10 +99,12 @@ describe("Handlers", () => {
 
   describe("Lobby Handler", () => {
     it("should join the lobby", async () => {
-      lobbyServiceGetInfoMock.mockReturnValue({
-        athletes: [{ id: "athlete-id", name: "expensive player" }],
+      getInfoMocked.mockReturnValue({
+        athletes: [
+          { id: "athlete-id", name: "expensive player", gender: "male" },
+        ],
         court: [],
-        nextGameDate: "2023-07-14T00:00:00.000Z",
+        nextGameDate: new Date("2023-07-14T00:00:00.000Z"),
       });
 
       clientSocket.emit("lobby:join", { name: "expensive player" });
@@ -98,17 +112,19 @@ describe("Handlers", () => {
       const queue = await waitForEventToBeEmitted(clientSocket, "lobby:list");
 
       expect(queue).toEqual({
-        athletes: [{ id: "athlete-id", name: "expensive player" }],
+        athletes: [
+          { id: "athlete-id", name: "expensive player", gender: "male" },
+        ],
         court: [],
         nextGameDate: "2023-07-14T00:00:00.000Z",
       });
     });
 
     it("should leave the lobby", async () => {
-      lobbyServiceGetInfoMock.mockReturnValue({
+      getInfoMocked.mockReturnValue({
         athletes: [],
         court: [],
-        nextGameDate: "2023-07-14T00:00:00.000Z",
+        nextGameDate: new Date("2023-07-14T00:00:00.000Z"),
       });
 
       clientSocket.emit("lobby:leave", { name: "expensive player" });
@@ -125,23 +141,23 @@ describe("Handlers", () => {
     it("should emit the next-game event when join the lobby", async () => {
       nextGameServiceHasGameAvailableMock.mockReturnValue(true);
 
-      lobbyServiceGetInfoMock.mockReturnValue({
+      getInfoMocked.mockReturnValue({
         athletes: [
-          { name: "first" },
-          { name: "second" },
-          { name: "third" },
-          { name: "fourth" },
-          { name: "expensive player" },
+          { id: "1", name: "first", gender: "female" },
+          { id: "2", name: "second", gender: "female" },
+          { id: "3", name: "third", gender: "female" },
+          { id: "4", name: "fourth", gender: "female" },
+          { id: "5", name: "expensive player", gender: "female" },
         ],
         court: [],
-        nextGameDate: "2023-07-14T00:00:00.000Z",
+        nextGameDate: new Date("2023-07-14T00:00:00.000Z"),
       });
 
       queueServiceGetFirstFourMock.mockReturnValue([
-        { name: "first" },
-        { name: "second" },
-        { name: "third" },
-        { name: "fourth" },
+        { id: "1", name: "first", gender: "female" },
+        { id: "2", name: "second", gender: "female" },
+        { id: "3", name: "third", gender: "female" },
+        { id: "4", name: "fourth", gender: "female" },
       ]);
 
       clientSocket.emit("lobby:join", { name: "expensive player" });
@@ -152,20 +168,20 @@ describe("Handlers", () => {
       );
 
       expect(nextGame).toEqual([
-        { name: "first" },
-        { name: "second" },
-        { name: "third" },
-        { name: "fourth" },
+        { id: "1", name: "first", gender: "female" },
+        { id: "2", name: "second", gender: "female" },
+        { id: "3", name: "third", gender: "female" },
+        { id: "4", name: "fourth", gender: "female" },
       ]);
     });
   });
 
   describe("Court Handler", () => {
     it("should join the court", async () => {
-      lobbyServiceGetInfoMock.mockReturnValue({
+      getInfoMocked.mockReturnValue({
         athletes: [],
-        court: [{ id: "athlete-id", name: "expensive player" }],
-        nextGameDate: "2023-07-14T00:00:00.000Z",
+        court: [{ id: "athlete-id", name: "expensive player", gender: "male" }],
+        nextGameDate: new Date("2023-07-14T00:00:00.000Z"),
       });
 
       clientSocket.emit("court:join", { name: "expensive player" });
@@ -179,16 +195,18 @@ describe("Handlers", () => {
 
       expect(court).toEqual({
         athletes: [],
-        court: [{ id: "athlete-id", name: "expensive player" }],
+        court: [{ id: "athlete-id", name: "expensive player", gender: "male" }],
         nextGameDate: "2023-07-14T00:00:00.000Z",
       });
     });
 
     it("should leave the court", async () => {
-      lobbyServiceGetInfoMock.mockReturnValue({
-        athletes: [{ id: "athlete-id", name: "expensive player" }],
+      getInfoMocked.mockReturnValue({
+        athletes: [
+          { id: "athlete-id", name: "expensive player", gender: "female" },
+        ],
         court: [],
-        nextGameDate: "2023-07-14T00:00:00.000Z",
+        nextGameDate: new Date("2023-07-14T00:00:00.000Z"),
       });
 
       clientSocket.emit("court:leave", { name: "expensive player" });
@@ -198,7 +216,9 @@ describe("Handlers", () => {
       expect(courtServiceLeaveMock).toHaveBeenCalledWith(serverSocket?.id);
 
       expect(queue).toEqual({
-        athletes: [{ id: "athlete-id", name: "expensive player" }],
+        athletes: [
+          { id: "athlete-id", name: "expensive player", gender: "female" },
+        ],
         court: [],
         nextGameDate: "2023-07-14T00:00:00.000Z",
       });

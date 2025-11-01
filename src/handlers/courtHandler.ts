@@ -1,6 +1,6 @@
 import { Server, Socket } from "socket.io";
 
-import { Athlete } from "../models/athleteModel.js";
+import { Athlete, Gender } from "../models/athleteModel.js";
 
 import { courtService } from "../services/courtService.js";
 import { queueService } from "../services/queueService.js";
@@ -10,6 +10,7 @@ import { court, lobby } from "./events.js";
 
 interface CourtPayload {
   name: string;
+  gender: Gender;
 }
 
 export function registerCourtHandlers(io: Server, socket: Socket) {
@@ -17,6 +18,7 @@ export function registerCourtHandlers(io: Server, socket: Socket) {
     const player: Athlete = {
       id: socket.id,
       name: data.name,
+      gender: data.gender,
     };
 
     courtService.join(player);
@@ -32,6 +34,7 @@ export function registerCourtHandlers(io: Server, socket: Socket) {
     const player: Athlete = {
       id: socket.id,
       name: data.name,
+      gender: data.gender,
     };
 
     courtService.leave(player.id);
