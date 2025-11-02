@@ -46,12 +46,12 @@ describe("Lobby Service", () => {
     });
   });
 
-  test("should return a lobby list", () => {
-    const preview = lobbyService.getList();
+  test("should return a lobby details", () => {
+    const preview = lobbyService.getInfo();
 
     expect(preview).toEqual({
       court: [{ id: "connection-id", name: "expensive player in game" }],
-      atheletes: [{ id: "connection-id", name: "expensive player waiting" }],
+      athletes: [{ id: "connection-id", name: "expensive player waiting" }],
       nextGameDate: "2023-07-14T00:00:00.000Z",
     });
   });

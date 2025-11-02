@@ -26,19 +26,19 @@ function getPreview() {
   return lobbyPreview;
 }
 
-function getList() {
+function getInfo() {
   const court = courtRepository.list();
 
-  const atheletes = athleteRepository.list();
+  const athletes = athleteRepository.list();
 
   const queueSize = athleteRepository.size();
 
   const nextGameDate = calculateNextGameDate(queueSize);
 
-  return { atheletes, court, nextGameDate };
+  return { athletes, court, nextGameDate };
 }
 
 export const lobbyService = {
   getPreview,
-  getList,
+  getInfo,
 };
