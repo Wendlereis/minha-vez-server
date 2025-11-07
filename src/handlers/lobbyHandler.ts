@@ -1,6 +1,6 @@
 import { Server, Socket } from "socket.io";
 
-import { Athlete } from "../models/athleteModel.js";
+import { Athlete, Gender } from "../models/athleteModel.js";
 
 import { queueService } from "../services/queueService.js";
 import { lobbyService } from "../services/lobbyService.js";
@@ -10,6 +10,7 @@ import { court, lobby } from "./events.js";
 
 interface QueuePayload {
   name: string;
+  gender: Gender;
 }
 
 export function registerLobbyHandlers(io: Server, socket: Socket) {
@@ -17,6 +18,7 @@ export function registerLobbyHandlers(io: Server, socket: Socket) {
     const athlete: Athlete = {
       id: socket.id,
       name: data.name,
+      gender: data.gender,
     };
 
     queueService.join(athlete);
