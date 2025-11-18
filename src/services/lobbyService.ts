@@ -26,12 +26,16 @@ function getPreview() {
   return lobbyPreview;
 }
 
+/**
+ * Returns complete lobby information including athletes, court, and next game date.
+ * Optimized to reuse the athletes array length instead of calling size() again.
+ */
 function getInfo() {
   const court = courtRepository.list();
 
   const athletes = athleteRepository.list();
 
-  const queueSize = athleteRepository.size();
+  const queueSize = athletes.length;
 
   const nextGameDate = calculateNextGameDate(queueSize);
 

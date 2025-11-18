@@ -31,13 +31,13 @@ export function registerCourtHandlers(io: Server, socket: Socket) {
   }
 
   function leave(data: CourtPayload) {
+    courtService.leave(socket.id);
+
     const player: Athlete = {
       id: socket.id,
       name: data.name,
       gender: data.gender,
     };
-
-    courtService.leave(player.id);
 
     queueService.join(player);
 

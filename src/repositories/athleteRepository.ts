@@ -1,29 +1,33 @@
 import { Athlete } from "../models/athleteModel.js";
 
-const athletes: Athlete[] = [];
+/**
+ * Athletes repository using Map for O(1) lookup and removal operations.
+ * Previous implementation used Array which required O(n) operations for finding and removing athletes.
+ */
+const athletes = new Map<string, Athlete>();
 
 function add(athlete: Athlete) {
-  athletes.push(athlete);
+  athletes.set(athlete.id, athlete);
 }
 
+/**
+ * Returns a new array of all athletes.
+ * Note: Creates a new array to prevent external modifications to the internal Map.
+ */
 function list() {
-  return athletes;
+  return Array.from(athletes.values());
 }
 
+/**
+ * Removes an athlete by ID in O(1) time.
+ * Previous Array implementation required O(n) findIndex followed by O(n) splice.
+ */
 function remove(id: string) {
-  const athleteLeavingIndex = athletes.findIndex(
-    (athlete) => athlete.id === id
-  );
-
-  if (athleteLeavingIndex < 0) {
-    return;
-  }
-
-  athletes.splice(athleteLeavingIndex, 1);
+  athletes.delete(id);
 }
 
 function size() {
-  return athletes.length;
+  return athletes.size;
 }
 
 export const athleteRepository = {

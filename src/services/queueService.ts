@@ -10,14 +10,14 @@ function leave(id: string) {
   athleteRepository.remove(id);
 }
 
+/**
+ * Returns the first four athletes in the queue.
+ * Optimized to use slice() instead of destructuring + manual array creation.
+ */
 function getFirstFour() {
   const queue = athleteRepository.list();
 
-  const [first, second, third, fourth] = queue;
-
-  const players = [first, second, third, fourth];
-
-  return players;
+  return queue.slice(0, 4);
 }
 
 export const queueService = {
