@@ -31,7 +31,7 @@ function getInfo() {
 
   const athletes = athleteRepository.list();
 
-  const queueSize = athleteRepository.size();
+  const queueSize = athletes.length;
 
   const nextGameDate = calculateNextGameDate(queueSize);
 

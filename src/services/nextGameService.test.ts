@@ -2,14 +2,14 @@ import { describe, expect, test, vi } from "vitest";
 
 import { nextGameService } from "./nextGameService";
 
-const athleteListMock = vi.fn();
+const athleteSizeMock = vi.fn();
 
-const courtListMock = vi.fn();
+const courtSizeMock = vi.fn();
 
 vi.mock("../repositories/athleteRepository.js", () => {
   return {
     athleteRepository: {
-      list: () => athleteListMock(),
+      size: () => athleteSizeMock(),
     },
   };
 });
@@ -17,22 +17,16 @@ vi.mock("../repositories/athleteRepository.js", () => {
 vi.mock("../repositories/courtRepository.js", () => {
   return {
     courtRepository: {
-      list: () => courtListMock(),
+      size: () => courtSizeMock(),
     },
   };
 });
 
 describe("Next Game Service", () => {
   test("should return true for next game available", () => {
-    courtListMock.mockReturnValue([]);
+    courtSizeMock.mockReturnValue(0);
 
-    athleteListMock.mockReturnValue([
-      { name: "first" },
-      { name: "second" },
-      { name: "third" },
-      { name: "fourth" },
-      { name: "fifth" },
-    ]);
+    athleteSizeMock.mockReturnValue(5);
 
     const response = nextGameService.hasGameAvailable();
 
@@ -40,14 +34,9 @@ describe("Next Game Service", () => {
   });
 
   test("should return false for next game available", () => {
-    courtListMock.mockReturnValue([
-      { name: "first" },
-      { name: "second" },
-      { name: "third" },
-      { name: "fourth" },
-    ]);
+    courtSizeMock.mockReturnValue(4);
 
-    athleteListMock.mockReturnValue([{ name: "fifth" }, { name: "sixth" }]);
+    athleteSizeMock.mockReturnValue(2);
 
     const response = nextGameService.hasGameAvailable();
 

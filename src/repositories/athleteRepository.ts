@@ -1,29 +1,21 @@
 import { Athlete } from "../models/athleteModel.js";
 
-const athletes: Athlete[] = [];
+const athletes = new Map<string, Athlete>();
 
 function add(athlete: Athlete) {
-  athletes.push(athlete);
+  athletes.set(athlete.id, athlete);
 }
 
 function list() {
-  return athletes;
+  return Array.from(athletes.values());
 }
 
 function remove(id: string) {
-  const athleteLeavingIndex = athletes.findIndex(
-    (athlete) => athlete.id === id
-  );
-
-  if (athleteLeavingIndex < 0) {
-    return;
-  }
-
-  athletes.splice(athleteLeavingIndex, 1);
+  athletes.delete(id);
 }
 
 function size() {
-  return athletes.length;
+  return athletes.size;
 }
 
 export const athleteRepository = {

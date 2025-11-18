@@ -1,29 +1,26 @@
 import { Athlete } from "../models/athleteModel.js";
 
-const courtPlayers: Athlete[] = [];
+const courtPlayers = new Map<string, Athlete>();
 
 function list() {
-  return courtPlayers;
+  return Array.from(courtPlayers.values());
 }
 
 function add(player: Athlete) {
-  courtPlayers.push(player);
+  courtPlayers.set(player.id, player);
 }
 
 function remove(id: string) {
-  const playerLeavingIndex = courtPlayers.findIndex(
-    (player) => player.id === id
-  );
+  courtPlayers.delete(id);
+}
 
-  if (playerLeavingIndex < 0) {
-    return;
-  }
-
-  courtPlayers.splice(playerLeavingIndex, 1);
+function size() {
+  return courtPlayers.size;
 }
 
 export const courtRepository = {
   list,
   add,
   remove,
+  size,
 };
