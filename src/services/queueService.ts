@@ -10,6 +10,10 @@ function leave(id: string) {
   athleteRepository.remove(id);
 }
 
+/**
+ * Returns the first four athletes in the queue.
+ * Optimized to use slice() instead of destructuring + manual array creation.
+ */
 function getFirstFour() {
   const queue = athleteRepository.list();
 
