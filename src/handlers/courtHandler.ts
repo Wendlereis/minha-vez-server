@@ -5,6 +5,7 @@ import { Athlete, Gender } from "../models/athleteModel.js";
 import { courtService } from "../services/courtService.js";
 import { queueService } from "../services/queueService.js";
 import { lobbyService } from "../services/lobbyService.js";
+import { nextGameService } from "../services/nextGameService.js";
 
 import { court, lobby } from "./events.js";
 
@@ -44,6 +45,8 @@ export function registerCourtHandlers(io: Server, socket: Socket) {
     const lobbyInfo = lobbyService.getInfo();
 
     io.emit(lobby.list, lobbyInfo);
+
+    nextGameService.checkAndEmitNextGame(io);
   }
 
   socket.on(court.join, join);

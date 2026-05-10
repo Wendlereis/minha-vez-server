@@ -178,5 +178,38 @@ describe("Handlers", () => {
         nextGameDate: "2023-07-14T00:00:00.000Z",
       });
     });
+
+    it("should emit the next-game event when leaving court with enough players in queue", async () => {
+      lobbyServiceGetInfoMock.mockReturnValue({
+        athletes: [
+          { id: "1", name: "first", gender: "female" },
+          { id: "2", name: "second", gender: "female" },
+          { id: "3", name: "third", gender: "female" },
+          { id: "4", name: "fourth", gender: "female" },
+        ],
+        court: [],
+        nextGameDate: new Date("2023-07-14T00:00:00.000Z"),
+      });
+
+      nextGameServiceCheckAndEmitNextGameMock.mockImplementation((io) => {
+        io.emit("court:next-game", [
+          { id: "1", name: "first", gender: "female" },
+          { id: "2", name: "second", gender: "female" },
+          { id: "3", name: "third", gender: "female" },
+          { id: "4", name: "fourth", gender: "female" },
+        ]);
+      });
+
+      clientSocket.emit("court:leave", { name: "expensive player", gender: "female" });
+
+      const nextGame = await waitForEventToBeEmitted(clientSocket, "court:next-game");
+
+      expect(nextGame).toEqual([
+        { id: "1", name: "first", gender: "female" },
+        { id: "2", name: "second", gender: "female" },
+        { id: "3", name: "third", gender: "female" },
+        { id: "4", name: "fourth", gender: "female" },
+      ]);
+    });
   });
 });

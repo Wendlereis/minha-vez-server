@@ -23,6 +23,5 @@ function checkAndEmitNextGame(io: Server) {
 }
 
 export const nextGameService = {
-  hasGameAvailable,
   checkAndEmitNextGame,
 };
