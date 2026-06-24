@@ -26,7 +26,7 @@ vi.mock("../services/matchSetupService.js");
 const lobbyServiceGetInfoMock = vi.mocked(lobbyService.getInfo);
 
 const courtServiceJoinMock = vi.mocked(courtService.join);
-const courtServiceLeaveMock = vi.mocked(courtService.leave);
+const courtServiceRequestLeaveMock = vi.mocked(courtService.requestLeave);
 
 const nextGameServiceCheckAndEmitNextGameMock = vi.mocked(
   nextGameService.checkAndEmitNextGame
@@ -155,11 +155,13 @@ describe("Handlers", () => {
         nextGameDate: new Date("2023-07-14T00:00:00.000Z"),
       });
 
+      courtServiceRequestLeaveMock.mockReturnValue({ cleared: true, toRejoin: [] });
+
       clientSocket.emit("court:leave", { name: "expensive player" });
 
       const queue = await waitForEventToBeEmitted(clientSocket, "lobby:list");
 
-      expect(courtServiceLeaveMock).toHaveBeenCalledWith(serverSocket?.id);
+      expect(courtServiceRequestLeaveMock).toHaveBeenCalledWith(serverSocket?.id, false);
 
       expect(queue).toEqual({
         athletes: [
@@ -181,6 +183,8 @@ describe("Handlers", () => {
         court: [],
         nextGameDate: new Date("2023-07-14T00:00:00.000Z"),
       });
+
+      courtServiceRequestLeaveMock.mockReturnValue({ cleared: true, toRejoin: [] });
 
       nextGameServiceCheckAndEmitNextGameMock.mockImplementation((io) => {
         io.emit("court:next-game", [

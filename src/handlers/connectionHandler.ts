@@ -16,15 +16,18 @@ export function registerConnectionHandlers(io: Server, socket: Socket) {
 
     const wasOnCourt = courtRepository.list().some(p => p.id === socket.id);
     
-    courtService.leave(socket.id);
-    queueService.leave(socket.id);
+    if (wasOnCourt) {
+      const { cleared, toRejoin } = courtService.requestLeave(socket.id, false);
+      if (cleared) {
+        toRejoin.forEach((p) => queueService.join(p));
+        nextGameService.checkAndEmitNextGame(io);
+      }
+    } else {
+      queueService.leave(socket.id);
+    }
 
     const lobbyList = lobbyService.getInfo();
     io.emit(lobby.list, lobbyList);
-
-    if (wasOnCourt) {
-      nextGameService.checkAndEmitNextGame(io);
-    }
   }
 
   socket.on(server.disconnect, disconnect);

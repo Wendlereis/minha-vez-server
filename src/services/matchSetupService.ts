@@ -127,7 +127,8 @@ function acceptInvite(io: Server, playerId: string) {
       });
       clearPendingGame();
       io.emit(lobby.list, lobbyService.getInfo());
-      // we could emit a 'court:started' if needed, but lobby list update is enough.
+      // Emit empty array to clear the next-game UI for all clients
+      io.emit(court.nextGame, []);
     } else {
       emitUpdate(io);
     }

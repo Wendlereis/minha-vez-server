@@ -29,23 +29,14 @@ export function registerCourtHandlers(io: Server, socket: Socket) {
   }
 
   function leave(data: LeavePayload) {
-    const player: Athlete = {
-      id: socket.id,
-      name: data.name,
-      gender: data.gender,
-    };
+    const { cleared, toRejoin } = courtService.requestLeave(socket.id, !!data.rejoinQueue);
 
-    courtService.leave(player.id);
-
-    if (data.rejoinQueue) {
-      queueService.join(player);
+    if (cleared) {
+      toRejoin.forEach((p) => queueService.join(p));
+      nextGameService.checkAndEmitNextGame(io);
     }
 
-    const lobbyInfo = lobbyService.getInfo();
-
-    io.emit(lobby.list, lobbyInfo);
-
-    nextGameService.checkAndEmitNextGame(io);
+    io.emit(lobby.list, lobbyService.getInfo());
   }
 
   socket.on(court.join, join);
