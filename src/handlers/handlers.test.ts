@@ -21,6 +21,8 @@ vi.mock("../services/courtService.js");
 
 vi.mock("../services/nextGameService.js");
 
+vi.mock("../services/matchSetupService.js");
+
 const lobbyServiceGetInfoMock = vi.mocked(lobbyService.getInfo);
 
 const courtServiceJoinMock = vi.mocked(courtService.join);
@@ -29,6 +31,9 @@ const courtServiceLeaveMock = vi.mocked(courtService.leave);
 const nextGameServiceCheckAndEmitNextGameMock = vi.mocked(
   nextGameService.checkAndEmitNextGame
 );
+
+import { matchSetupService } from "../services/matchSetupService.js";
+const matchSetupServiceAcceptInviteMock = vi.mocked(matchSetupService.acceptInvite);
 
 describe("Handlers", () => {
   let io: Server;
@@ -132,27 +137,13 @@ describe("Handlers", () => {
   });
 
   describe("Court Handler", () => {
-    it("should join the court", async () => {
-      lobbyServiceGetInfoMock.mockReturnValue({
-        athletes: [],
-        court: [{ id: "athlete-id", name: "expensive player", gender: "male" }],
-        nextGameDate: new Date("2023-07-14T00:00:00.000Z"),
-      });
-
+    it("should accept invite to the court", async () => {
       clientSocket.emit("court:join", { name: "expensive player" });
 
-      const court = await waitForEventToBeEmitted(clientSocket, "lobby:list");
+      // wait a tiny bit for the emit to process
+      await new Promise(r => setTimeout(r, 100));
 
-      expect(courtServiceJoinMock).toHaveBeenCalledWith({
-        id: serverSocket?.id,
-        name: "expensive player",
-      });
-
-      expect(court).toEqual({
-        athletes: [],
-        court: [{ id: "athlete-id", name: "expensive player", gender: "male" }],
-        nextGameDate: "2023-07-14T00:00:00.000Z",
-      });
+      expect(matchSetupServiceAcceptInviteMock).toHaveBeenCalledWith(io, serverSocket?.id);
     });
 
     it("should leave the court", async () => {

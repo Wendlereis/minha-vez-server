@@ -5,6 +5,7 @@ import { Athlete, Gender } from "../models/athleteModel.js";
 import { queueService } from "../services/queueService.js";
 import { lobbyService } from "../services/lobbyService.js";
 import { nextGameService } from "../services/nextGameService.js";
+import { matchSetupService } from "../services/matchSetupService.js";
 
 import { lobby } from "./events.js";
 
@@ -28,6 +29,9 @@ export function registerLobbyHandlers(io: Server, socket: Socket) {
     io.emit(lobby.list, lobbyList);
 
     nextGameService.checkAndEmitNextGame(io);
+    
+    // Also check if there's a pending game that needs filling
+    matchSetupService.handleNewPlayerInQueue(io);
   }
 
   function leave() {

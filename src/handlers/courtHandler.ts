@@ -6,6 +6,7 @@ import { courtService } from "../services/courtService.js";
 import { queueService } from "../services/queueService.js";
 import { lobbyService } from "../services/lobbyService.js";
 import { nextGameService } from "../services/nextGameService.js";
+import { matchSetupService } from "../services/matchSetupService.js";
 
 import { court, lobby } from "./events.js";
 
@@ -14,24 +15,20 @@ interface CourtPayload {
   gender: Gender;
 }
 
+interface LeavePayload extends CourtPayload {
+  rejoinQueue?: boolean;
+}
+
 export function registerCourtHandlers(io: Server, socket: Socket) {
   function join(data: CourtPayload) {
-    const player: Athlete = {
-      id: socket.id,
-      name: data.name,
-      gender: data.gender,
-    };
-
-    courtService.join(player);
-
-    queueService.leave(player.id);
-
-    const lobbyInfo = lobbyService.getInfo();
-
-    io.emit(lobby.list, lobbyInfo);
+    matchSetupService.acceptInvite(io, socket.id);
   }
 
-  function leave(data: CourtPayload) {
+  function skip(data: CourtPayload) {
+    matchSetupService.declineInvite(io, socket.id);
+  }
+
+  function leave(data: LeavePayload) {
     const player: Athlete = {
       id: socket.id,
       name: data.name,
@@ -40,7 +37,9 @@ export function registerCourtHandlers(io: Server, socket: Socket) {
 
     courtService.leave(player.id);
 
-    queueService.join(player);
+    if (data.rejoinQueue) {
+      queueService.join(player);
+    }
 
     const lobbyInfo = lobbyService.getInfo();
 
@@ -51,4 +50,5 @@ export function registerCourtHandlers(io: Server, socket: Socket) {
 
   socket.on(court.join, join);
   socket.on(court.leave, leave);
+  socket.on(court.skip, skip);
 }

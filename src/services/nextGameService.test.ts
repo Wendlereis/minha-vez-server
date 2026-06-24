@@ -19,6 +19,11 @@ vi.mock("./queueService.js", () => ({
   queueService: { getFirstFour: () => queueServiceGetFirstFourMock() },
 }));
 
+const matchSetupServiceCreatePendingGameMock = vi.fn();
+vi.mock("./matchSetupService.js", () => ({
+  matchSetupService: { createPendingGame: (io: any) => matchSetupServiceCreatePendingGameMock(io) },
+}));
+
 const FOUR_PLAYERS = [
   { id: "1", name: "first", gender: "female" },
   { id: "2", name: "second", gender: "female" },
@@ -40,7 +45,7 @@ describe("Next Game Service", () => {
 
       nextGameService.checkAndEmitNextGame(ioMock);
 
-      expect(ioMock.emit).toHaveBeenCalledWith("court:next-game", FOUR_PLAYERS);
+      expect(matchSetupServiceCreatePendingGameMock).toHaveBeenCalledWith(ioMock);
     });
 
     test("should not emit when court is occupied", () => {

@@ -1,4 +1,5 @@
 import { Server } from "socket.io";
+import { matchSetupService } from "./matchSetupService.js";
 
 import { athleteRepository } from "../repositories/athleteRepository.js";
 import { courtRepository } from "../repositories/courtRepository.js";
@@ -17,8 +18,7 @@ function hasGameAvailable() {
 
 function checkAndEmitNextGame(io: Server) {
   if (hasGameAvailable()) {
-    const nextGamePlayers = queueService.getFirstFour();
-    io.emit(court.nextGame, nextGamePlayers);
+    matchSetupService.createPendingGame(io);
   }
 }
 
