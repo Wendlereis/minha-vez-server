@@ -21,16 +21,19 @@ vi.mock("../services/courtService.js");
 
 vi.mock("../services/nextGameService.js");
 
+vi.mock("../services/matchSetupService.js");
+
 const lobbyServiceGetInfoMock = vi.mocked(lobbyService.getInfo);
 
-const queueServiceGetFirstFourMock = vi.mocked(queueService.getFirstFour);
-
 const courtServiceJoinMock = vi.mocked(courtService.join);
-const courtServiceLeaveMock = vi.mocked(courtService.leave);
+const courtServiceRequestLeaveMock = vi.mocked(courtService.requestLeave);
 
-const nextGameServiceHasGameAvailableMock = vi.mocked(
-  nextGameService.hasGameAvailable
+const nextGameServiceCheckAndEmitNextGameMock = vi.mocked(
+  nextGameService.checkAndEmitNextGame
 );
+
+import { matchSetupService } from "../services/matchSetupService.js";
+const matchSetupServiceAcceptInviteMock = vi.mocked(matchSetupService.acceptInvite);
 
 describe("Handlers", () => {
   let io: Server;
@@ -96,8 +99,6 @@ describe("Handlers", () => {
     });
 
     it("should emit the next-game event when join the lobby", async () => {
-      nextGameServiceHasGameAvailableMock.mockReturnValue(true);
-
       lobbyServiceGetInfoMock.mockReturnValue({
         athletes: [
           { id: "1", name: "first", gender: "female" },
@@ -110,12 +111,14 @@ describe("Handlers", () => {
         nextGameDate: new Date("2023-07-14T00:00:00.000Z"),
       });
 
-      queueServiceGetFirstFourMock.mockReturnValue([
-        { id: "1", name: "first", gender: "female" },
-        { id: "2", name: "second", gender: "female" },
-        { id: "3", name: "third", gender: "female" },
-        { id: "4", name: "fourth", gender: "female" },
-      ]);
+      nextGameServiceCheckAndEmitNextGameMock.mockImplementation((io) => {
+        io.emit("court:next-game", [
+          { id: "1", name: "first", gender: "female" },
+          { id: "2", name: "second", gender: "female" },
+          { id: "3", name: "third", gender: "female" },
+          { id: "4", name: "fourth", gender: "female" },
+        ]);
+      });
 
       clientSocket.emit("lobby:join", { name: "expensive player" });
 
@@ -134,27 +137,13 @@ describe("Handlers", () => {
   });
 
   describe("Court Handler", () => {
-    it("should join the court", async () => {
-      lobbyServiceGetInfoMock.mockReturnValue({
-        athletes: [],
-        court: [{ id: "athlete-id", name: "expensive player", gender: "male" }],
-        nextGameDate: new Date("2023-07-14T00:00:00.000Z"),
-      });
-
+    it("should accept invite to the court", async () => {
       clientSocket.emit("court:join", { name: "expensive player" });
 
-      const court = await waitForEventToBeEmitted(clientSocket, "lobby:list");
+      // wait a tiny bit for the emit to process
+      await new Promise(r => setTimeout(r, 100));
 
-      expect(courtServiceJoinMock).toHaveBeenCalledWith({
-        id: serverSocket?.id,
-        name: "expensive player",
-      });
-
-      expect(court).toEqual({
-        athletes: [],
-        court: [{ id: "athlete-id", name: "expensive player", gender: "male" }],
-        nextGameDate: "2023-07-14T00:00:00.000Z",
-      });
+      expect(matchSetupServiceAcceptInviteMock).toHaveBeenCalledWith(io, serverSocket?.id);
     });
 
     it("should leave the court", async () => {
@@ -166,11 +155,13 @@ describe("Handlers", () => {
         nextGameDate: new Date("2023-07-14T00:00:00.000Z"),
       });
 
+      courtServiceRequestLeaveMock.mockReturnValue({ cleared: true, toRejoin: [] });
+
       clientSocket.emit("court:leave", { name: "expensive player" });
 
       const queue = await waitForEventToBeEmitted(clientSocket, "lobby:list");
 
-      expect(courtServiceLeaveMock).toHaveBeenCalledWith(serverSocket?.id);
+      expect(courtServiceRequestLeaveMock).toHaveBeenCalledWith(serverSocket?.id, false);
 
       expect(queue).toEqual({
         athletes: [
@@ -179,6 +170,41 @@ describe("Handlers", () => {
         court: [],
         nextGameDate: "2023-07-14T00:00:00.000Z",
       });
+    });
+
+    it("should emit the next-game event when leaving court with enough players in queue", async () => {
+      lobbyServiceGetInfoMock.mockReturnValue({
+        athletes: [
+          { id: "1", name: "first", gender: "female" },
+          { id: "2", name: "second", gender: "female" },
+          { id: "3", name: "third", gender: "female" },
+          { id: "4", name: "fourth", gender: "female" },
+        ],
+        court: [],
+        nextGameDate: new Date("2023-07-14T00:00:00.000Z"),
+      });
+
+      courtServiceRequestLeaveMock.mockReturnValue({ cleared: true, toRejoin: [] });
+
+      nextGameServiceCheckAndEmitNextGameMock.mockImplementation((io) => {
+        io.emit("court:next-game", [
+          { id: "1", name: "first", gender: "female" },
+          { id: "2", name: "second", gender: "female" },
+          { id: "3", name: "third", gender: "female" },
+          { id: "4", name: "fourth", gender: "female" },
+        ]);
+      });
+
+      clientSocket.emit("court:leave", { name: "expensive player", gender: "female" });
+
+      const nextGame = await waitForEventToBeEmitted(clientSocket, "court:next-game");
+
+      expect(nextGame).toEqual([
+        { id: "1", name: "first", gender: "female" },
+        { id: "2", name: "second", gender: "female" },
+        { id: "3", name: "third", gender: "female" },
+        { id: "4", name: "fourth", gender: "female" },
+      ]);
     });
   });
 });

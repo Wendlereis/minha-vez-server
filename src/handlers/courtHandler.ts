@@ -5,6 +5,8 @@ import { Athlete, Gender } from "../models/athleteModel.js";
 import { courtService } from "../services/courtService.js";
 import { queueService } from "../services/queueService.js";
 import { lobbyService } from "../services/lobbyService.js";
+import { nextGameService } from "../services/nextGameService.js";
+import { matchSetupService } from "../services/matchSetupService.js";
 
 import { court, lobby } from "./events.js";
 
@@ -13,39 +15,31 @@ interface CourtPayload {
   gender: Gender;
 }
 
+interface LeavePayload extends CourtPayload {
+  rejoinQueue?: boolean;
+}
+
 export function registerCourtHandlers(io: Server, socket: Socket) {
   function join(data: CourtPayload) {
-    const player: Athlete = {
-      id: socket.id,
-      name: data.name,
-      gender: data.gender,
-    };
-
-    courtService.join(player);
-
-    queueService.leave(player.id);
-
-    const lobbyInfo = lobbyService.getInfo();
-
-    io.emit(lobby.list, lobbyInfo);
+    matchSetupService.acceptInvite(io, socket.id);
   }
 
-  function leave(data: CourtPayload) {
-    const player: Athlete = {
-      id: socket.id,
-      name: data.name,
-      gender: data.gender,
-    };
+  function skip(data: CourtPayload) {
+    matchSetupService.declineInvite(io, socket.id);
+  }
 
-    courtService.leave(player.id);
+  function leave(data: LeavePayload) {
+    const { cleared, toRejoin } = courtService.requestLeave(socket.id, !!data.rejoinQueue);
 
-    queueService.join(player);
+    if (cleared) {
+      toRejoin.forEach((p) => queueService.join(p));
+      nextGameService.checkAndEmitNextGame(io);
+    }
 
-    const lobbyInfo = lobbyService.getInfo();
-
-    io.emit(lobby.list, lobbyInfo);
+    io.emit(lobby.list, lobbyService.getInfo());
   }
 
   socket.on(court.join, join);
   socket.on(court.leave, leave);
+  socket.on(court.skip, skip);
 }

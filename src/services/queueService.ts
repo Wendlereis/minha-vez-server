@@ -12,16 +12,16 @@ function leave(id: string) {
 
 function getFirstFour() {
   const queue = athleteRepository.list();
+  return queue.slice(0, 4);
+}
 
-  const [first, second, third, fourth] = queue;
-
-  const players = [first, second, third, fourth];
-
-  return players;
+function getAll() {
+  return athleteRepository.list();
 }
 
 export const queueService = {
   join,
   leave,
   getFirstFour,
+  getAll,
 };

@@ -3,17 +3,30 @@ import { Server, Socket } from "socket.io";
 import { courtService } from "../services/courtService.js";
 import { queueService } from "../services/queueService.js";
 import { lobbyService } from "../services/lobbyService.js";
+import { nextGameService } from "../services/nextGameService.js";
+import { matchSetupService } from "../services/matchSetupService.js";
+import { courtRepository } from "../repositories/courtRepository.js";
 
 import { lobby, server } from "./events.js";
 
 export function registerConnectionHandlers(io: Server, socket: Socket) {
   function disconnect() {
-    courtService.leave(socket.id);
+    // If they are in a pending game, decline it
+    matchSetupService.declineInvite(io, socket.id);
 
-    queueService.leave(socket.id);
+    const wasOnCourt = courtRepository.list().some(p => p.id === socket.id);
+    
+    if (wasOnCourt) {
+      const { cleared, toRejoin } = courtService.requestLeave(socket.id, false);
+      if (cleared) {
+        toRejoin.forEach((p) => queueService.join(p));
+        nextGameService.checkAndEmitNextGame(io);
+      }
+    } else {
+      queueService.leave(socket.id);
+    }
 
     const lobbyList = lobbyService.getInfo();
-
     io.emit(lobby.list, lobbyList);
   }
 

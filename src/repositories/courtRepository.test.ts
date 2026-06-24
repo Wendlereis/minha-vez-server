@@ -8,13 +8,13 @@ describe("Court Repository", () => {
 
     const result = courtRepository.list();
 
-    expect(result).toEqual([{ id: "999", name: "expensive player" }]);
+    expect(result).toEqual([{ id: "999", name: "expensive player", status: "playing" }]);
   });
 
   test("should list athletes", () => {
     const result = courtRepository.list();
 
-    expect(result).toEqual([{ id: "999", name: "expensive player" }]);
+    expect(result).toEqual([{ id: "999", name: "expensive player", status: "playing" }]);
   });
 
   test("should not remove an unknown athlete from the list", () => {
@@ -22,7 +22,7 @@ describe("Court Repository", () => {
 
     const result = courtRepository.list();
 
-    expect(result).toEqual([{ id: "999", name: "expensive player" }]);
+    expect(result).toEqual([{ id: "999", name: "expensive player", status: "playing" }]);
   });
 
   test("should remove an athlete from the list", () => {

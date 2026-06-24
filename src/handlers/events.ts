@@ -9,6 +9,7 @@ export const court = {
   list: "court:list",
   join: "court:join",
   leave: "court:leave",
+  skip: "court:skip",
   nextGame: "court:next-game",
 };
 

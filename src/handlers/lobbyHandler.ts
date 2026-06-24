@@ -5,8 +5,9 @@ import { Athlete, Gender } from "../models/athleteModel.js";
 import { queueService } from "../services/queueService.js";
 import { lobbyService } from "../services/lobbyService.js";
 import { nextGameService } from "../services/nextGameService.js";
+import { matchSetupService } from "../services/matchSetupService.js";
 
-import { court, lobby } from "./events.js";
+import { lobby } from "./events.js";
 
 interface QueuePayload {
   name: string;
@@ -27,11 +28,10 @@ export function registerLobbyHandlers(io: Server, socket: Socket) {
 
     io.emit(lobby.list, lobbyList);
 
-    if (nextGameService.hasGameAvailable()) {
-      const nextGamePlayers = queueService.getFirstFour();
-
-      io.emit(court.nextGame, nextGamePlayers);
-    }
+    nextGameService.checkAndEmitNextGame(io);
+    
+    // Also check if there's a pending game that needs filling
+    matchSetupService.handleNewPlayerInQueue(io);
   }
 
   function leave() {
